@@ -159,7 +159,7 @@ public final class Main {
             params.put("include-private-methods", 1);
         }
         for (final String metric : this.metrics.split(",")) {
-            if (!metric.matches("[A-Z]+[0-9]?")) {
+            if (!metric.matches("(EO_)?[A-Z]+[0-9]?")) {
                 throw new IllegalArgumentException(
                     String.format("Invalid metric name: '%s'", metric)
                 );

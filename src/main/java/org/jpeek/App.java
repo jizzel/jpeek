@@ -47,7 +47,10 @@ import org.cactoos.scalar.And;
 import org.cactoos.scalar.AndInThreads;
 import org.cactoos.scalar.IoChecked;
 import org.cactoos.scalar.LengthOf;
+import org.eolang.core.EOObject;
+import org.eolang.core.data.EODataObject;
 import org.jpeek.calculus.Calculus;
+import org.jpeek.calculus.eo.EOCalculus;
 import org.jpeek.calculus.xsl.XslCalculus;
 import org.jpeek.skeleton.Skeleton;
 import org.xembly.Directives;
@@ -146,6 +149,7 @@ public final class App {
         "PMD.GuardLogStatement"
     })
     public void analyze() throws IOException {
+
         final long start = System.currentTimeMillis();
         final Base base = new DefaultBase(this.input);
         final XML skeleton = new Skeleton(base).xml();
@@ -172,6 +176,15 @@ public final class App {
         this.save(skeleton.toString(), "skeleton.xml");
         final Collection<Report> reports = new LinkedList<>();
         final Calculus xsl = new XslCalculus();
+        final Calculus eoCalc = new EOCalculus();
+        if (this.params.containsKey("EO_LCOM")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_LCOM", this.params, 10.0d, -5.0d)
+                    )
+            );
+        }
         if (this.params.containsKey("LCOM")) {
             reports.add(
                 new XslReport(
