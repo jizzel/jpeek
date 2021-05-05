@@ -147,7 +147,10 @@ public final class Skeleton {
         new Unchecked<>(
             new AndInThreads(
                 new Mapped<>(
-                    clz -> () -> all.add(Skeleton.xembly(clz)),
+                    clz -> () -> {
+//                        EOSkeleton eoSkeleton = new EOSkeleton(clz);
+//                        eoSkeleton.getClassFieldsAndMethods();
+                        return all.add(Skeleton.xembly(clz));},
                     new Classes(this.base)
                 )
             )
