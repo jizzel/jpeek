@@ -34,13 +34,13 @@ public class EOCalculus implements Calculus {
                                 new EOmethods(
                                         new EODataObject("methodName"),
                                         new EOarray(
-                                                new EOattr(new EODataObject("mAttributeName_1")),
-                                                new EOattr(new EODataObject("mAttributeName_2"))
+                                                new EOattr(new EODataObject("mthdAttributeName_1")),
+                                                new EOattr(new EODataObject("mthdAttributeName_2"))
                                         ))),
                         new EODataObject(
                                 new EOattr(
-                                        new EODataObject("cAttributeName_1"),
-                                        new EODataObject("cAttributeName_2"))
+                                        new EODataObject("clzAttributeName_1"),
+                                        new EODataObject("clzAttributeName_2"))
                         )
                 );
         obj1._getData();
