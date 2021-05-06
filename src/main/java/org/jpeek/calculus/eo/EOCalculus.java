@@ -6,12 +6,15 @@ import org.cactoos.collection.Mapped;
 import org.cactoos.io.ResourceOf;
 import org.cactoos.text.FormattedText;
 import org.cactoos.text.TextOf;
+import org.eolang.EOarray;
 import org.eolang.core.EOObject;
 import org.eolang.core.data.EODataObject;
 import org.jpeek.App;
 import org.jpeek.Header;
 import org.jpeek.calculus.Calculus;
 import org.jpeek.skeleton.Skeleton;
+import org.jpeek.skeleton.eo.EOattr;
+import org.jpeek.skeleton.eo.EOmethods;
 import org.xembly.Directives;
 import org.xembly.Xembler;
 
@@ -24,6 +27,23 @@ public class EOCalculus implements Calculus {
         System.out.println("==== EO code execution ====");
         EOObject obj = new org.jpeek.calculus.eo.EOtest(new EODataObject("Hello from EO"));
         obj._getData();
+        // concept
+        EOObject obj1 = new org.jpeek.calculus.eo.EOclass(
+                        new EODataObject("className"),
+                        new EODataObject(
+                                new EOmethods(
+                                        new EODataObject("methodName"),
+                                        new EOarray(
+                                                new EOattr(new EODataObject("mAttributeName_1")),
+                                                new EOattr(new EODataObject("mAttributeName_2"))
+                                        ))),
+                        new EODataObject(
+                                new EOattr(
+                                        new EODataObject("cAttributeName_1"),
+                                        new EODataObject("cAttributeName_2"))
+                        )
+                );
+        obj1._getData();
         System.out.println("==== EO code execution ====");
         if("EO_LCOM".equals(metric)) metric = "LCOM";
         XML res = new XSLDocument(

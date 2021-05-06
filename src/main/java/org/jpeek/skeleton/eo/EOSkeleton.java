@@ -1,4 +1,4 @@
-package org.jpeek.skeleton;
+package org.jpeek.skeleton.eo;
 
 import javassist.CtClass;
 import org.eolang.EOarray;
@@ -24,22 +24,26 @@ public final class EOSkeleton {
     /**
      * @return an {@code EOarray} object containing the class, the lists of methods and the lists of attributes
      */
-    public EOObject getClassFieldsAndMethods(){
+    public EOclass getClassFieldsAndMethods(){
         EOObject[] methods = Arrays.stream(this.srcClass.getDeclaredMethods())
-                .map(method -> new EODataObject(method.getName()))
-                .toArray(EODataObject[]::new);
-        EOObject[] fields = Arrays.stream(this.srcClass.getDeclaredFields())
+                .map(method -> new EOmethods(
+                        new EODataObject(method.getName()),
+                        new EOarray(Arrays.stream(method.getFields()) // getField concept
+                        .map(field -> new EODataObject(field.getName())) //getName concept
+                        .toArray(EOObject[]::new))
+                ))
+                .toArray(EOObject[]::new);
+        EOObject[] attr = Arrays.stream(this.srcClass.getDeclaredFields())
                 .map(field -> new EODataObject(field.getName()))
-                .toArray(EODataObject[]::new);
-
-
+                .toArray(EOObject[]::new);
 //        [name methods atts] > class
 //        [name atts] > method
 //        [name] > att
-        return new EOarray(
-                new EOarray(new EODataObject(this.srcClass.getName())),
+        return new EOclass(
+                new EODataObject(this.srcClass.getName()),
                 new EOarray(methods),
-                new EOarray(fields));
+                new EOarray(attr)
+        );
     }
 
 

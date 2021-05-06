@@ -42,6 +42,7 @@ import org.cactoos.scalar.Unchecked;
 import org.jpeek.App;
 import org.jpeek.Base;
 import org.jpeek.Header;
+import org.jpeek.skeleton.eo.EOSkeleton;
 import org.xembly.Directives;
 import org.xembly.Xembler;
 
@@ -148,8 +149,8 @@ public final class Skeleton {
             new AndInThreads(
                 new Mapped<>(
                     clz -> () -> {
-//                        EOSkeleton eoSkeleton = new EOSkeleton(clz);
-//                        eoSkeleton.getClassFieldsAndMethods();
+                        EOSkeleton eoSkeleton = new EOSkeleton(clz);
+                        eoSkeleton.getClassFieldsAndMethods();
                         return all.add(Skeleton.xembly(clz));},
                     new Classes(this.base)
                 )
