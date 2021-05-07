@@ -7,10 +7,10 @@ import org.eolang.core.data.EOData;
 
 public class EOclass extends EOObject {
     private final EOObject eOclass;
-    private final EOObject eOmethods;
-    private final EOObject eOattr;
+    private final EOmethod eOmethods;
+    private final EOattr eOattr;
 
-    public EOclass(EOObject className, EOObject eOmethods, EOObject eOattr){
+    public EOclass(EOObject className, EOmethod eOmethods, EOattr eOattr){
         this.eOclass = className;
         this.eOmethods = eOmethods;
         this.eOattr = eOattr;

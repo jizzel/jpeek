@@ -6,9 +6,9 @@ import org.eolang.core.data.EOData;
 
 public class EOmethod extends EOObject {
     private final EOObject eOmethod;
-    private final EOObject eOattr;
+    private final EOattr eOattr;
 
-    public EOmethod(EOObject methodName, EOObject eOattr){
+    public EOmethod(EOObject methodName, EOattr eOattr){
         this.eOmethod = methodName;
         this.eOattr = eOattr;
     }
