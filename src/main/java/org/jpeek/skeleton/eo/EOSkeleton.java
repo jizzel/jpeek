@@ -1,10 +1,13 @@
 package org.jpeek.skeleton.eo;
 
 import javassist.CtClass;
+import javassist.CtField;
+import javassist.CtMethod;
 import org.eolang.EOarray;
 import org.eolang.core.EOObject;
 import org.eolang.core.data.EODataObject;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -34,13 +37,10 @@ public final class EOSkeleton {
         EOObject[] attr = Arrays.stream(this.srcClass.getDeclaredFields())
                 .map(field -> new EODataObject(field.getName()))
                 .toArray(EOObject[]::new);
-//        [name methods atts] > class
-//        [name atts] > method
-//        [name] > att
         return new EOclass(
                 new EODataObject(this.srcClass.getName()),
-                new EODataObject(this.srcClass.getDeclaredMethods()[0]),
-                new EODataObject(this.srcClass.getDeclaredFields()[0])
+                new EOarray(methods),
+                new EOarray(attr)
         );
     }
 

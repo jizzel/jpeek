@@ -22,18 +22,6 @@ public class EOCalculus implements Calculus {
         System.out.println("==== EO code execution ====");
         EOObject obj = new org.jpeek.calculus.eo.EOtest(new EODataObject("Hello from EO"));
         obj._getData();
-        // concept
-        EOObject obj1 = new org.jpeek.calculus.eo.EOclass(
-                new EODataObject("className"),
-                new EOmethod(
-                        new EODataObject("methodName"),
-                        new EODataObject("mthdAttributeName_1")
-                ),
-                new EOattr(
-                        new EODataObject("clzAttributeName_1")
-                )
-        );
-        obj1._getData();
         System.out.println("==== EO code execution ====");
         if("EO_LCOM".equals(metric)) metric = "LCOM";
         XML res = new XSLDocument(
