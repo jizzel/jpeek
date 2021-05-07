@@ -26,11 +26,9 @@ public final class EOSkeleton {
      */
     public EOclass getClassFieldsAndMethods(){
         EOObject[] methods = Arrays.stream(this.srcClass.getDeclaredMethods())
-                .map(method -> new EOmethods(
+                .map(method -> new EOmethod(
                         new EODataObject(method.getName()),
-                        new EOarray(Arrays.stream(method.getFields()) // getField concept
-                        .map(field -> new EODataObject(field.getName())) //getName concept
-                        .toArray(EOObject[]::new))
+                        new EODataObject("someAttribute")
                 ))
                 .toArray(EOObject[]::new);
         EOObject[] attr = Arrays.stream(this.srcClass.getDeclaredFields())
@@ -41,8 +39,8 @@ public final class EOSkeleton {
 //        [name] > att
         return new EOclass(
                 new EODataObject(this.srcClass.getName()),
-                new EOarray(methods),
-                new EOarray(attr)
+                new EODataObject(this.srcClass.getDeclaredMethods()[0]),
+                new EODataObject(this.srcClass.getDeclaredFields()[0])
         );
     }
 

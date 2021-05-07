@@ -1,20 +1,15 @@
 package org.jpeek.calculus.eo;
 
 import com.jcabi.xml.*;
-import org.cactoos.collection.Joined;
-import org.cactoos.collection.Mapped;
 import org.cactoos.io.ResourceOf;
 import org.cactoos.text.FormattedText;
 import org.cactoos.text.TextOf;
-import org.eolang.EOarray;
 import org.eolang.core.EOObject;
 import org.eolang.core.data.EODataObject;
-import org.jpeek.App;
 import org.jpeek.Header;
 import org.jpeek.calculus.Calculus;
-import org.jpeek.skeleton.Skeleton;
 import org.jpeek.skeleton.eo.EOattr;
-import org.jpeek.skeleton.eo.EOmethods;
+import org.jpeek.skeleton.eo.EOmethod;
 import org.xembly.Directives;
 import org.xembly.Xembler;
 
@@ -29,20 +24,15 @@ public class EOCalculus implements Calculus {
         obj._getData();
         // concept
         EOObject obj1 = new org.jpeek.calculus.eo.EOclass(
-                        new EODataObject("className"),
-                        new EODataObject(
-                                new EOmethods(
-                                        new EODataObject("methodName"),
-                                        new EOarray(
-                                                new EOattr(new EODataObject("mthdAttributeName_1")),
-                                                new EOattr(new EODataObject("mthdAttributeName_2"))
-                                        ))),
-                        new EODataObject(
-                                new EOattr(
-                                        new EODataObject("clzAttributeName_1"),
-                                        new EODataObject("clzAttributeName_2"))
-                        )
-                );
+                new EODataObject("className"),
+                new EOmethod(
+                        new EODataObject("methodName"),
+                        new EODataObject("mthdAttributeName_1")
+                ),
+                new EOattr(
+                        new EODataObject("clzAttributeName_1")
+                )
+        );
         obj1._getData();
         System.out.println("==== EO code execution ====");
         if("EO_LCOM".equals(metric)) metric = "LCOM";

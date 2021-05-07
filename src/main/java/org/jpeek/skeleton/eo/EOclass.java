@@ -3,6 +3,7 @@ package org.jpeek.skeleton.eo;
 import javassist.CtClass;
 import org.eolang.EOarray;
 import org.eolang.core.EOObject;
+import org.eolang.core.data.EOData;
 
 public class EOclass extends EOObject {
     private final EOObject eOclass;
@@ -15,4 +16,8 @@ public class EOclass extends EOObject {
         this.eOattr = eOattr;
     }
 
+    @Override
+    public EOData _getData() {
+        return eOclass._getData();
+    }
 }
