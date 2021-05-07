@@ -28,15 +28,15 @@ public final class EOSkeleton {
      * @return an {@code EOarray} object containing the class, the lists of methods and the lists of attributes
      */
     public EOclass getClassFieldsAndMethods(){
-        EOObject[] methods = Arrays.stream(this.srcClass.getDeclaredMethods())
+        EOmethod[] methods = Arrays.stream(this.srcClass.getDeclaredMethods())
                 .map(method -> new EOmethod(
                         new EODataObject(method.getName()),
                         new EODataObject("someAttribute")
                 ))
-                .toArray(EOObject[]::new);
-        EOObject[] attr = Arrays.stream(this.srcClass.getDeclaredFields())
+                .toArray(EOmethod[]::new);
+        EOattr[] attr = Arrays.stream(this.srcClass.getDeclaredFields())
                 .map(field -> new EODataObject(field.getName()))
-                .toArray(EOObject[]::new);
+                .toArray(EOattr[]::new);
         return new EOclass(
                 new EODataObject(this.srcClass.getName()),
                 new EOarray(methods),
