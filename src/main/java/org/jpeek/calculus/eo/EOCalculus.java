@@ -8,8 +8,6 @@ import org.eolang.core.EOObject;
 import org.eolang.core.data.EODataObject;
 import org.jpeek.Header;
 import org.jpeek.calculus.Calculus;
-import org.jpeek.skeleton.eo.EOattr;
-import org.jpeek.skeleton.eo.EOmethod;
 import org.xembly.Directives;
 import org.xembly.Xembler;
 
