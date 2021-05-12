@@ -47,8 +47,7 @@ import org.cactoos.scalar.And;
 import org.cactoos.scalar.AndInThreads;
 import org.cactoos.scalar.IoChecked;
 import org.cactoos.scalar.LengthOf;
-import org.eolang.core.EOObject;
-import org.eolang.core.data.EODataObject;
+//import org.jpeek.skeleton.eo.EOSkeleton;
 import org.jpeek.calculus.Calculus;
 import org.jpeek.calculus.eo.EOCalculus;
 import org.jpeek.calculus.xsl.XslCalculus;
@@ -153,6 +152,7 @@ public final class App {
         final long start = System.currentTimeMillis();
         final Base base = new DefaultBase(this.input);
         final XML skeleton = new Skeleton(base).xml();
+//        new EOSkeleton(skeleton).getClassFieldsAndMethods();
         final Collection<XSL> layers = new LinkedList<>();
         if (this.params.containsKey("include-ctors")) {
             Logger.debug(this, "Constructors will be included");
