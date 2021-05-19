@@ -1,17 +1,13 @@
 package org.jpeek.calculus.eo;
 
 import com.jcabi.xml.*;
-import org.cactoos.collection.Joined;
-import org.cactoos.collection.Mapped;
 import org.cactoos.io.ResourceOf;
 import org.cactoos.text.FormattedText;
 import org.cactoos.text.TextOf;
 import org.eolang.core.EOObject;
 import org.eolang.core.data.EODataObject;
-import org.jpeek.App;
 import org.jpeek.Header;
 import org.jpeek.calculus.Calculus;
-import org.jpeek.skeleton.Skeleton;
 import org.xembly.Directives;
 import org.xembly.Xembler;
 

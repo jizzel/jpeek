@@ -23,38 +23,26 @@
  */
 package org.jpeek;
 
-import com.jcabi.log.Logger;
 import com.jcabi.xml.ClasspathSources;
-import com.jcabi.xml.StrictXML;
 import com.jcabi.xml.XML;
-import com.jcabi.xml.XMLDocument;
-import com.jcabi.xml.XSDDocument;
 import com.jcabi.xml.XSL;
-import com.jcabi.xml.XSLChain;
 import com.jcabi.xml.XSLDocument;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import org.cactoos.collection.CollectionOf;
 import org.cactoos.io.ResourceOf;
 import org.cactoos.io.TeeInput;
-import org.cactoos.list.ListOf;
 import org.cactoos.map.MapEntry;
 import org.cactoos.map.MapOf;
-import org.cactoos.scalar.And;
-import org.cactoos.scalar.AndInThreads;
 import org.cactoos.scalar.IoChecked;
 import org.cactoos.scalar.LengthOf;
 import org.eolang.core.EOObject;
-import org.eolang.core.data.EODataObject;
-import org.jpeek.calculus.Calculus;
-import org.jpeek.calculus.eo.EOCalculus;
-import org.jpeek.calculus.xsl.XslCalculus;
+import org.jpeek.calculus.eo.EOclass;
+import org.jpeek.calculus.eo.EOlcom1;
 import org.jpeek.skeleton.Skeleton;
-import org.xembly.Directives;
-import org.xembly.Xembler;
+import org.jpeek.skeleton.eo.EOSkeleton;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Application.
@@ -76,7 +64,8 @@ import org.xembly.Xembler;
     "PMD.NPathComplexity",
     "PMD.CyclomaticComplexity",
     "PMD.StdCyclomaticComplexity",
-    "PMD.ModifiedCyclomaticComplexity"
+    "PMD.ModifiedCyclomaticComplexity",
+    "all"
 })
 public final class App {
 
@@ -103,7 +92,7 @@ public final class App {
     public App(final Path source, final Path target) {
         this(
             source, target,
-            new MapOf<String, Object>(
+            new MapOf<>(
                 new MapEntry<>("LCOM", true),
                 new MapEntry<>("LCOM2", true),
                 new MapEntry<>("LCOM3", true),
@@ -152,7 +141,33 @@ public final class App {
 
         final long start = System.currentTimeMillis();
         final Base base = new DefaultBase(this.input);
+
         final XML skeleton = new Skeleton(base).xml();
+        final EOSkeleton eoSkeleton = new EOSkeleton(skeleton);
+        final List<EOObject> clArray = eoSkeleton.getClassFieldsAndMethods();
+        if (this.params.containsKey("EO_LCOM")) {
+            System.out.println("===== LCOM1(EO implementation) =====");
+            String outFormat = "| %-40s | %5s |%n";
+
+            System.out.format("+------------------------------------------+-------+%n");
+            System.out.format("| Class name                               | LCOM1 |%n");
+            System.out.format("+------------------------------------------+-------+%n");
+            clArray.forEach(clItem -> {
+                EOObject metric = new EOlcom1(clItem);
+                String className = ((EOclass)clItem).EOname()._getData().toString();
+                System.out.format(outFormat, className, metric._getData());
+            });
+            System.out.format("+------------------------------------------+-------+%n");
+        }
+
+        if (this.params.containsKey("EO_LCOM3")) {
+            System.out.println("===== LCOM3(EO implementation) =====");
+            clArray.forEach(clItem -> {
+
+            });
+        }
+
+        /*
         final Collection<XSL> layers = new LinkedList<>();
         if (this.params.containsKey("include-ctors")) {
             Logger.debug(this, "Constructors will be included");
@@ -373,7 +388,7 @@ public final class App {
                 this::copyXsd,
                 new ListOf<>("index", "matrix", "metric", "skeleton")
             )
-        ).value();
+        ).value();*/
     }
 
     /**

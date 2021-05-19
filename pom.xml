@@ -270,6 +270,13 @@ SOFTWARE.
         </executions>
       </plugin>
       <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <useIncrementalCompilation>false</useIncrementalCompilation>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
@@ -300,17 +307,18 @@ SOFTWARE.
         </configuration>
       </plugin>
     </plugins>
-    <pluginManagement>
+    <!--<pluginManagement>
       <plugins>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.0</version>
           <configuration>
+            <compilerArgument>-Xlint:none</compilerArgument>
             <useIncrementalCompilation>false</useIncrementalCompilation>
           </configuration>
         </plugin>
       </plugins>
-    </pluginManagement>
+    </pluginManagement>-->
   </build>
   <profiles>
     <profile>
