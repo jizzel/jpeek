@@ -2,6 +2,7 @@ package org.jpeek.skeleton.eo;
 
 import com.jcabi.xml.XML;
 import org.eolang.EOarray;
+import org.eolang.EOstring;
 import org.eolang.core.EOObject;
 import org.eolang.core.data.EODataObject;
 import org.jpeek.calculus.eo.EOatt;
@@ -33,12 +34,14 @@ public final class EOSkeleton {
         List<EOObject> classObjects = new ArrayList<EOObject>();
         for (XML __xml : this.xml.nodes("//class")) {
             String className = this.xml.xpath("//package/@id").get(0) + "." + __xml.xpath("@id").get(0);
+
             EOarray classAttributes = new EOarray();
 //            List of class attributes
             for (XML attr : __xml.nodes("attributes/attribute")) {
                 String attName = attr.xpath("text()").get(0);
-                classAttributes.EOappend(new EOatt(new EODataObject(attName)));
+                classAttributes = classAttributes.EOappend(new EOatt(new EOstring(attName)));
             }
+
             EOarray classMethods = new EOarray();
 //            list of class methods
             for (XML _xml : __xml.nodes("methods/method")) {
@@ -47,19 +50,20 @@ public final class EOSkeleton {
 //                    list of fields/attributes used by this method
                     for(XML _xml_2 : _xml_1.nodes("op")){
                         if(!_xml_2.xpath("text()").get(0).trim().equals(""))
-                            methodAttributes.EOappend(new EOatt(new EODataObject(_xml_2.xpath("text()").get(0).trim())));
+                            methodAttributes = methodAttributes.EOappend(new EOatt(new EOstring(_xml_2.xpath("text()").get(0).trim())));
                     }
                 }
+
                 String methodName = _xml.xpath("@name").get(0);
-                classMethods.EOappend(
+                classMethods = classMethods.EOappend(
                         new EOmethod(
-                                new EODataObject(methodName),
+                                new EOstring(methodName),
                                 methodAttributes
                         ));
 
             }
             classObjects.add(new EOclass(
-                    new EODataObject(className),
+                    new EOstring(className),
                     classMethods,
                     classAttributes
             ));

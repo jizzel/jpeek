@@ -15,93 +15,49 @@
 #  и запускаем рекурсию для следующего(здесь единственное, я не додумался как сделать так чтобы при первом совпадении рекурсия завершалась и возвращала 1)
 #  соответственно передаем в повторную рекурсию те же два списка атрибутов и индекс увеличенный на единицу
 +package org.jpeek.calculus.eo
-+alias sprintf org.eolang.txt.sprintf
-
-[arr element] > count
-  reduce. > @
-    arr
-    0
-    []
-      [accum current] > reduce
-        if. > @
-          eq.
-            current
-            ^.^.element
-          add.
-            accum
-            1
-          accum
-
-[name methods atts] > class
-  pairsofmethods methods > pairs
-  [methods] > pairsofmethods
-    [i1 accum cur1] > reducer2
-      [el cur2 i2] > reducei
-        if. > @
-          (i2.leq (^.i1))
-          (^.accum)
-          (^.accum).append (tuple (^.cur1) (^.cur2))
-    [] > reducer
-      [accum cur1 i1] > reducei
-        reducei. > @
-          (^.methods)
-          accum
-          ((^.reducer2) i1 accum cur1)
-    reducei. > @
-      methods
-      *
-      reducer
-
-[name atts] > method
-  atts > listofatts
-  name > mthdname
-
-[name] > att
-  name > attname
-
-[a b] > tuple
-
-
++alias stdout org.eolang.io.stdout
++alias org.jpeek.calculus.eo.count
 
 [testClass] > lcom1
-  * > mthdscohesion
-
-  [att1 att2 index] > rec2
-    if. > @
-      index.less (att1.length)
-      each.
-        att2
-        []
-          [current] > each
-            if. > @
-              eq.
-                current.attname
-                (^.^.att1.get (^.^.index)).attname
-              1
-              0
-      rec2 att1 att2 (index.add 1)
-
   [arr index mthdscohesion] > rec1
     if. > @
-      index.less (arr.length)
-      mthdscohesion.append
-        ^.rec2 ((arr.get index).listofatts) ((arr.get (index.add 1)).listofatts) 0
-      rec1 arr (index.add 1) mthdscohesion
+      index.geq (arr.length)
+      mthdscohesion
+      rec1
+        arr
+        (index.add 1)
+        append.
+          mthdscohesion
+          ^.rec2 (((arr.get index).fst).atts) (((arr.get index).snd).atts) 0 0
 
-
-
-  rec1 > subres
-    (testClass.pairs)
-    0
-    mthdscohesion
-
-  count (subres.mthdscohesion) 0 > p
-  count (subres.mthdscohesion) 1 > q
-
+  [att1 att2 index result] > rec2
+    if. > @
+      index.geq (att1.length)
+      result
+      if.
+        (result.greater 0)
+        result
+        rec2
+          att1
+          att2
+          (index.add 1)
+          reduce.
+            att2
+            0
+            []
+              [accum current] > reduce
+                if. > @
+                  eq.
+                    current.name
+                    (^.^.att1.get (^.^.index)).name
+                  1
+                  accum
+  rec1 (testClass.methods.pairs) 0 * > subres
+  count subres 0 > p
+  count subres 1 > q
   if. > @
     q.less p
-    0
     sub.
       p
       q
-
+    0
