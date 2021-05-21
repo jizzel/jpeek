@@ -25,22 +25,30 @@ package org.jpeek;
 
 import com.jcabi.log.Logger;
 import com.jcabi.xml.*;
+import org.cactoos.collection.CollectionOf;
 import org.cactoos.io.ResourceOf;
 import org.cactoos.io.TeeInput;
+import org.cactoos.list.ListOf;
 import org.cactoos.map.MapEntry;
 import org.cactoos.map.MapOf;
+import org.cactoos.scalar.And;
+import org.cactoos.scalar.AndInThreads;
 import org.cactoos.scalar.IoChecked;
 import org.cactoos.scalar.LengthOf;
 import org.eolang.EOarray;
 import org.eolang.core.EOObject;
 import org.eolang.core.data.EODataObject;
+import org.jpeek.calculus.Calculus;
 import org.jpeek.calculus.eo.*;
 import org.jpeek.calculus.eo.EOatt;
 import org.jpeek.calculus.eo.EOclass;
 import org.jpeek.calculus.eo.EOlcom1;
 import org.jpeek.calculus.eo.EOmethod;
+import org.jpeek.calculus.xsl.XslCalculus;
 import org.jpeek.skeleton.Skeleton;
 import org.jpeek.skeleton.eo.EOSkeleton;
+import org.xembly.Directives;
+import org.xembly.Xembler;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -143,14 +151,9 @@ public final class App {
         "PMD.GuardLogStatement"
     })
     public void analyze() throws IOException {
-
         final long start = System.currentTimeMillis();
         final Base base = new DefaultBase(this.input);
-
         final XML skeleton = new Skeleton(base).xml();
-
-
-
         final Collection<XSL> layers = new LinkedList<>();
         if (this.params.containsKey("include-ctors")) {
             Logger.debug(this, "Constructors will be included");
@@ -170,58 +173,35 @@ public final class App {
             layers.add(App.xsl("layers/no-private-methods.xsl"));
             Logger.debug(this, "Private methods will be ignored");
         }
-        //this.save(skeleton.toString(), "skeleton.xml");
+        this.save(skeleton.toString(), "skeleton.xml");
         final XSL chain = new XSLChain(layers);
 
         final EOSkeleton eoSkeleton = new EOSkeleton(chain.transform(skeleton));
         final List<EOObject> clArray = eoSkeleton.getClassFieldsAndMethods();
-        if (this.params.containsKey("EO_LCOM1")) {
-            System.out.println("===== LCOM1(EO implementation) =====");
-            String outFormat = "| %-40s | %5s |%n";
-
-            System.out.format("+------------------------------------------+-------+%n");
-            System.out.format("| Class name                               | LCOM1 |%n");
-            System.out.format("+------------------------------------------+-------+%n");
-            clArray.forEach(clItem -> {
-                EOObject metric = new EOlcom1(clItem);
-                String className = ((EOclass)clItem).EOname()._getData().toString();
-                System.out.format(outFormat, className, metric._getData().toString());
-            });
-            System.out.format("+------------------------------------------+-------+%n");
-        }
-
-        if (this.params.containsKey("EO_LCOM1_1")) {
-            System.out.println("===== LCOM1(EO implementation with no map/reduce) =====");
-            String outFormat = "| %-40s | %5s |%n";
-
-            System.out.format("+------------------------------------------+-------+%n");
-            System.out.format("| Class name                               | LCOM1 |%n");
-            System.out.format("+------------------------------------------+-------+%n");
-            clArray.forEach(clItem -> {
-                EOObject metric = new org.jpeek.calculus.eo.EOlcom1_1(clItem);
-                String className = ((EOclass)clItem).EOname()._getData().toString();
-                System.out.format(outFormat, className, metric._getData().toString());
-            });
-            System.out.format("+------------------------------------------+-------+%n");
-        }
-
-        if (this.params.containsKey("EO_LCOM3")) {
-            System.out.println("===== LCOM3(EO implementation) =====");
-            clArray.forEach(clItem -> {
-
-            });
-        }
-
-
-        /*
+        final Calculus eoCalc = new EOCalculus();
         final Collection<Report> reports = new LinkedList<>();
         final Calculus xsl = new XslCalculus();
-        final Calculus eoCalc = new EOCalculus();
-        if (this.params.containsKey("EO_LCOM")) {
+        if (this.params.containsKey("EO_LCOM1")) {
             reports.add(
                     new XslReport(
                             chain.transform(skeleton), eoCalc,
-                            new ReportData("EO_LCOM", this.params, 10.0d, -5.0d)
+                            new ReportData("EO_LCOM1")
+                    )
+            );
+        }
+        if (this.params.containsKey("EO_LCOM2")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_LCOM2")
+                    )
+            );
+        }
+        if (this.params.containsKey("EO_LCOM3")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_LCOM3")
                     )
             );
         }
@@ -413,7 +393,7 @@ public final class App {
                 this::copyXsd,
                 new ListOf<>("index", "matrix", "metric", "skeleton")
             )
-        ).value();*/
+        ).value();
     }
 
     /**

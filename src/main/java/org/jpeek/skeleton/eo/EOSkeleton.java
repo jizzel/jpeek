@@ -4,13 +4,13 @@ import com.jcabi.xml.XML;
 import org.eolang.EOarray;
 import org.eolang.EOstring;
 import org.eolang.core.EOObject;
-import org.eolang.core.data.EODataObject;
 import org.jpeek.calculus.eo.EOatt;
 import org.jpeek.calculus.eo.EOmethod;
 import org.jpeek.calculus.eo.EOclass;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
+
 
 /**
  * Class for getting list of methods and attributes of each class
