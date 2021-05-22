@@ -24,19 +24,7 @@
 package org.jpeek;
 
 import com.jcabi.log.Logger;
-import com.jcabi.xml.ClasspathSources;
-import com.jcabi.xml.StrictXML;
-import com.jcabi.xml.XML;
-import com.jcabi.xml.XMLDocument;
-import com.jcabi.xml.XSDDocument;
-import com.jcabi.xml.XSL;
-import com.jcabi.xml.XSLChain;
-import com.jcabi.xml.XSLDocument;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import com.jcabi.xml.*;
 import org.cactoos.collection.CollectionOf;
 import org.cactoos.io.ResourceOf;
 import org.cactoos.io.TeeInput;
@@ -47,13 +35,27 @@ import org.cactoos.scalar.And;
 import org.cactoos.scalar.AndInThreads;
 import org.cactoos.scalar.IoChecked;
 import org.cactoos.scalar.LengthOf;
-//import org.jpeek.skeleton.eo.EOSkeleton;
+import org.eolang.EOarray;
+import org.eolang.core.EOObject;
+import org.eolang.core.data.EODataObject;
 import org.jpeek.calculus.Calculus;
-import org.jpeek.calculus.eo.EOCalculus;
+import org.jpeek.calculus.eo.*;
+import org.jpeek.calculus.eo.EOatt;
+import org.jpeek.calculus.eo.EOclass;
+import org.jpeek.calculus.eo.EOlcom1;
+import org.jpeek.calculus.eo.EOmethod;
 import org.jpeek.calculus.xsl.XslCalculus;
 import org.jpeek.skeleton.Skeleton;
+import org.jpeek.skeleton.eo.EOSkeleton;
 import org.xembly.Directives;
 import org.xembly.Xembler;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Application.
@@ -75,7 +77,8 @@ import org.xembly.Xembler;
     "PMD.NPathComplexity",
     "PMD.CyclomaticComplexity",
     "PMD.StdCyclomaticComplexity",
-    "PMD.ModifiedCyclomaticComplexity"
+    "PMD.ModifiedCyclomaticComplexity",
+    "all"
 })
 public final class App {
 
@@ -102,7 +105,7 @@ public final class App {
     public App(final Path source, final Path target) {
         this(
             source, target,
-            new MapOf<String, Object>(
+            new MapOf<>(
                 new MapEntry<>("LCOM", true),
                 new MapEntry<>("LCOM2", true),
                 new MapEntry<>("LCOM3", true),
@@ -148,11 +151,9 @@ public final class App {
         "PMD.GuardLogStatement"
     })
     public void analyze() throws IOException {
-
         final long start = System.currentTimeMillis();
         final Base base = new DefaultBase(this.input);
         final XML skeleton = new Skeleton(base).xml();
-//        new EOSkeleton(skeleton).getClassFieldsAndMethods();
         final Collection<XSL> layers = new LinkedList<>();
         if (this.params.containsKey("include-ctors")) {
             Logger.debug(this, "Constructors will be included");
@@ -172,16 +173,35 @@ public final class App {
             layers.add(App.xsl("layers/no-private-methods.xsl"));
             Logger.debug(this, "Private methods will be ignored");
         }
-        final XSL chain = new XSLChain(layers);
         this.save(skeleton.toString(), "skeleton.xml");
+        final XSL chain = new XSLChain(layers);
+
+        final EOSkeleton eoSkeleton = new EOSkeleton(chain.transform(skeleton));
+        final List<EOObject> clArray = eoSkeleton.getClassFieldsAndMethods();
+        final Calculus eoCalc = new EOCalculus();
         final Collection<Report> reports = new LinkedList<>();
         final Calculus xsl = new XslCalculus();
-        final Calculus eoCalc = new EOCalculus();
-        if (this.params.containsKey("EO_LCOM")) {
+        if (this.params.containsKey("EO_LCOM1")) {
             reports.add(
                     new XslReport(
                             chain.transform(skeleton), eoCalc,
-                            new ReportData("EO_LCOM", this.params, 10.0d, -5.0d)
+                            new ReportData("EO_LCOM1")
+                    )
+            );
+        }
+        if (this.params.containsKey("EO_LCOM2")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_LCOM2")
+                    )
+            );
+        }
+        if (this.params.containsKey("EO_LCOM3")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_LCOM3")
                     )
             );
         }

@@ -1,0 +1,22 @@
++package org.jpeek.calculus.eo
+
+[name methods atts] > class
+
+[name atts] > method
+
+[name] > att
+
+[arr element] > count
+  reduce. > @
+    arr
+    0
+    []
+      [accum current] > reduce
+        if. > @
+          eq.
+            current
+            ^.^.element
+          add.
+            accum
+            1
+          accum

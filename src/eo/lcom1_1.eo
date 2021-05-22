@@ -1,0 +1,77 @@
++package org.jpeek.calculus.eo
+
+#Проверка пары методов на использование общих полей
+#   true/false
+[m1 m2] > hasSameAtt
+
+  [a1 a2] > cmpAtt
+    eq. > @
+      a1.name
+      a2.name
+
+  [i imax j jmax] > attLoop
+    if. > @
+      i.greater imax
+      false
+      if.
+        j.greater jmax
+        attLoop
+          i.add 1
+          imax
+          0
+          jmax
+        if.
+          ^.cmpAtt
+            ^.m1.atts.get i
+            ^.m2.atts.get j
+          true
+          attLoop
+            i
+            imax
+            j.add 1
+            jmax
+
+  if. > @
+    and.
+      m1.atts.length.greater 0
+      m2.atts.length.greater 0
+    attLoop
+      0
+      m1.atts.length.sub 1
+      0
+      m2.atts.length.sub 1
+    false
+
+# Проверка методов на связанность:
+#    -1 - используют общие поля класса
+#	 1 - не используют общие поля класса
+[m1 m2] > isCohesived
+  if. > @
+    hasSameAtt m1 m2
+    -1
+    1
+# Вычисление метрики LCOM1
+[testClass] > lcom1_1
+  testClass.methods > methods
+
+  [i j imax] > methLoop
+    if. > @
+      i.greater
+        imax.sub 1
+      0
+      if.
+        j.greater imax
+        methLoop (i.add 1) (i.add 2) imax
+        add.
+          methLoop i (j.add 1) imax
+          isCohesived (^.methods.get i) (^.methods.get j)
+
+
+  methLoop 0 1 (methods.length.sub 1) > subres
+
+  if. > @
+    or.
+      methods.length.less 2
+      subres.less 0
+    0
+    subres

@@ -1,37 +1,71 @@
 package org.jpeek.calculus.eo;
 
 import com.jcabi.xml.*;
-import org.cactoos.io.ResourceOf;
-import org.cactoos.text.FormattedText;
-import org.cactoos.text.TextOf;
+import org.cactoos.collection.Joined;
+import org.cactoos.collection.Mapped;
 import org.eolang.core.EOObject;
 import org.eolang.core.data.EODataObject;
 import org.jpeek.Header;
 import org.jpeek.calculus.Calculus;
+import org.jpeek.skeleton.eo.EOSkeleton;
 import org.xembly.Directives;
 import org.xembly.Xembler;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class EOCalculus implements Calculus {
+
+    private Directives eo_directives(EOSkeleton eoSkeleton, String metricName){
+        final Map<String, Directives> packages = new HashMap<>(0);
+        eoSkeleton.getClassFieldsAndMethods().forEach(oeClass ->{
+            EOObject metric = new EODataObject(0);
+            switch (metricName){
+                case "EO_LCOM1": metric = new org.jpeek.calculus.eo.EOlcom1(oeClass);
+                    break;
+                case "EO_LCOM2": metric = new org.jpeek.calculus.eo.EOlcom2(oeClass);
+                    break;
+                case "EO_LCOM3": metric = new org.jpeek.calculus.eo.EOlcom3(oeClass);
+                    break;
+            }
+
+            String className = ((org.jpeek.calculus.eo.EOclass)oeClass).EOname()._getData().toString();
+            int i = className.lastIndexOf('.');
+            String packageName = className.substring(0,i);
+            className = className.substring(i+1);
+            packages.putIfAbsent(packageName, new Directives());
+            Directives packDirectives = packages.get(packageName);
+            if(packDirectives == null) {
+                packDirectives = new Directives();
+                packages.put(packageName, packDirectives);
+            }
+            packDirectives.add("class")
+                    .attr("id", className)
+                    .attr("value", metric._getData().toString())
+                    .up();
+
+        });
+        return new Directives().append(
+                new Joined<>(
+                        new Mapped<>(
+                                ent -> new Directives()
+                                        .add("package")
+                                        .attr("id", ent.getKey())
+                                        .append(ent.getValue())
+                                        .up(),
+                                packages.entrySet()
+                        )
+                )
+        );
+    }
+
     @Override
     public XML node(String metric, Map<String, Object> params, XML skeleton) throws IOException {
-        System.out.println("==== EO code execution ====");
-        EOObject obj = new org.jpeek.calculus.eo.EOtest(new EODataObject("Hello from EO"));
-        obj._getData();
-        System.out.println("==== EO code execution ====");
-        if("EO_LCOM".equals(metric)) metric = "LCOM";
-        XML res = new XSLDocument(
-                new TextOf(
-                        new ResourceOf(
-                                new FormattedText("org/jpeek/metrics/%s.xsl", metric)
-                        )
-                ).asString(),
-                Sources.DUMMY,
-                params
-        ).transform(skeleton);
-        final XML res2 =
+        final EOSkeleton eoSkeleton = new EOSkeleton(skeleton);
+        Directives mDirectives = new Directives();
+        mDirectives.append(eo_directives(eoSkeleton, metric));
+        final XML res =
                 new XMLDocument(
                         new Xembler(
                                 new Directives()
@@ -42,10 +76,6 @@ public class EOCalculus implements Calculus {
                                                         .attr("schema", "xsd/skeleton.xsd")
                                                         .iterator()
                                         )
-                                        /*.append(
-                                                () -> new Directives()
-                                                .attr("xsi:noNamespaceSchemaLocation", "xsd/metric.xsd")
-                                                .iterator())*/
                                         .add("title")
                                         .set(metric)
                                         .up()
@@ -54,21 +84,9 @@ public class EOCalculus implements Calculus {
                                         .up()
                                         .add("app")
                                         .attr("id", skeleton.xpath("//app/@id").get(0))
-                                        /*.append(
-                                                new Joined<>(
-                                                        new Mapped<>(
-                                                                ent -> new Directives()
-                                                                        .add("package")
-                                                                        .attr("id", ent.getKey())
-                                                                        .append(ent.getValue())
-                                                                        .up(),
-                                                                skeleton.getP
-                                                        )
-                                                )
-                                        )*/
+                                        .append(mDirectives)
                         ).xmlQuietly()
                 );
-        System.out.println(res2.toString());
         return res;
     }
 }

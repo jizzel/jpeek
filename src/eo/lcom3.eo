@@ -1,0 +1,59 @@
++package org.jpeek.calculus.eo
++alias org.jpeek.calculus.eo.count
+
+[class] > lcom3
+  [arr arr1 index mthdscohesion] > rec0
+    if. > @
+      index.geq (arr.length)
+      mthdscohesion
+      rec0
+        arr
+        arr1
+        (index.add 1)
+        append.
+          mthdscohesion
+          ^.rec2 ((arr.get index).atts) arr1 0 0
+
+  [att1 att2 index result] > rec2
+    if. > @
+      index.geq (att1.length)
+      result
+      if.
+        (result.greater 0)
+        result
+        rec2
+          att1
+          att2
+          (index.add 1)
+          reduce.
+            att2
+            0
+            []
+              [accum current] > reduce
+                if. > @
+                  eq.
+                    current.name
+                    (^.^.att1.get (^.^.index)).name
+                  1
+                  accum
+
+  [m a mA summA] > res
+    if. > @
+      or.
+        m.less 2
+        a.less 1
+      0
+      div.
+        ((m.toFloat).sub ((summA.toFloat).div (a.toFloat)))
+        ((m.toFloat).sub 1.0)
+
+  if. > @
+    or.
+      (((class.atts).length).less 1)
+      (((class.methods).length).less 2)
+    0
+    res
+      class.methods.length
+      class.atts.length
+      count (rec0 (class.methods) (class.atts) 0 *) 1
+      count (rec0 (class.methods) (class.atts) 0 *) 0
