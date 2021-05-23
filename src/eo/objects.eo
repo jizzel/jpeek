@@ -6,6 +6,24 @@
 
 [name] > att
 
+[a m] > isAUsedByM
+  loop > @
+    0
+    m.atts.length
+
+  [i imax] > loop
+    if. > @
+      i.geq imax
+      false
+      if.
+        eq.
+          (^.m.atts.get i).name
+          ^.a.name
+        true
+        loop
+          i.add 1
+          imax
+
 [arr element] > count
   reduce. > @
     arr

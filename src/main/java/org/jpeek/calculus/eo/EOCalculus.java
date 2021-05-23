@@ -36,10 +36,6 @@ public class EOCalculus implements Calculus {
             className = className.substring(i+1);
             packages.putIfAbsent(packageName, new Directives());
             Directives packDirectives = packages.get(packageName);
-            if(packDirectives == null) {
-                packDirectives = new Directives();
-                packages.put(packageName, packDirectives);
-            }
             packDirectives.add("class")
                     .attr("id", className)
                     .attr("value", metric._getData().toString())

@@ -32,41 +32,48 @@ public final class EOSkeleton {
      */
     public List<EOObject> getClassFieldsAndMethods(){
         List<EOObject> classObjects = new ArrayList<EOObject>();
-        for (XML __xml : this.xml.nodes("//class")) {
-            String className = this.xml.xpath("//package/@id").get(0) + "." + __xml.xpath("@id").get(0);
-
-            EOarray classAttributes = new EOarray();
-//            List of class attributes
-            for (XML attr : __xml.nodes("attributes/attribute")) {
-                String attName = attr.xpath("text()").get(0);
-                classAttributes = classAttributes.EOappend(new EOatt(new EOstring(attName)));
-            }
-
-            EOarray classMethods = new EOarray();
-//            list of class methods
-            for (XML _xml : __xml.nodes("methods/method")) {
-                EOarray methodAttributes = new EOarray();
-                for (XML _xml_1 : _xml.nodes("ops")) {
-//                    list of fields/attributes used by this method
-                    for(XML _xml_2 : _xml_1.nodes("op")){
-                        if(!_xml_2.xpath("text()").get(0).trim().equals(""))
-                            methodAttributes = methodAttributes.EOappend(new EOatt(new EOstring(_xml_2.xpath("text()").get(0).trim())));
-                    }
+        for (XML __xml_package : this.xml.nodes("//package")) {
+            String packageName = __xml_package.xpath("@id").get(0);
+            for (XML  __xml_class : __xml_package.nodes("//package[@id='"+packageName+"']//class")){
+                String className = packageName + "." + __xml_class.xpath("@id").get(0);
+                EOarray classAttributes = new EOarray();
+//              List of class attributes
+                for (XML attr : __xml_class.nodes("attributes/attribute")) {
+                    String attName = attr.xpath("text()").get(0);
+                    classAttributes = classAttributes.EOappend(new EOatt(new EOstring(attName)));
                 }
 
-                String methodName = _xml.xpath("@name").get(0);
-                classMethods = classMethods.EOappend(
-                        new EOmethod(
-                                new EOstring(methodName),
-                                methodAttributes
-                        ));
+                EOarray classMethods = new EOarray();
 
+//              list of class methods
+                for (XML _xml : __xml_class.nodes("methods/method")) {
+                    EOarray methodAttributes = new EOarray();
+                    String methodName = _xml.xpath("@name").get(0);
+                    for (XML _xml_1 : _xml.nodes("ops")) {
+//                      list of fields/attributes used by this method
+                        for(XML _xml_2 : _xml_1.nodes("op")){
+                            String attName = _xml_2.xpath("text()").get(0).trim();
+                            if(!attName.equals("")){
+                                methodAttributes = methodAttributes.EOappend(new EOatt(new EOstring(attName)));
+                            }
+
+                        }
+                    }
+
+
+                    classMethods = classMethods.EOappend(
+                            new EOmethod(
+                                    new EOstring(methodName),
+                                    methodAttributes
+                            ));
+
+                }
+                classObjects.add(new EOclass(
+                        new EOstring(className),
+                        classMethods,
+                        classAttributes
+                ));
             }
-            classObjects.add(new EOclass(
-                    new EOstring(className),
-                    classMethods,
-                    classAttributes
-            ));
         }
         return classObjects;
     }
