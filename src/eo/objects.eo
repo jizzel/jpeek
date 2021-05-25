@@ -1,11 +1,26 @@
 +package org.jpeek.calculus.eo
 
+# Class object
+# name - class name
+# methods - array of method objects
+# atts - array of attrribute objects of the class
 [name methods atts] > class
+  name > @
 
+# Method object
+# name - method name
+# atts - array of attrribute objects used by method
 [name atts] > method
+  name > @
 
+# Attrribute object
+# name - attrribute name
 [name] > att
+  name > @
 
+# is Attribute used by method
+# a - attribute object
+# m - method object
 [a m] > isAUsedByM
   loop > @
     0
