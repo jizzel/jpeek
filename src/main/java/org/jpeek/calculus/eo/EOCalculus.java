@@ -28,6 +28,10 @@ public class EOCalculus implements Calculus {
                     break;
                 case "EO_LCOM3": metric = new org.jpeek.calculus.eo.EOlcom3(oeClass);
                     break;
+                case "EO_TCC": metric = new org.jpeek.calculus.eo.EOtcc(oeClass);
+                    break;
+                case "EO_LCC": metric = new org.jpeek.calculus.eo.EOlcc(oeClass);
+                    break;
             }
 
             String className = ((org.jpeek.calculus.eo.EOclass)oeClass).EOname()._getData().toString();
@@ -38,7 +42,7 @@ public class EOCalculus implements Calculus {
             Directives packDirectives = packages.get(packageName);
             packDirectives.add("class")
                     .attr("id", className)
-                    .attr("value", metric._getData().toString())
+                    .attr("value",  metric._getData().toString())
                     .up();
 
         });

@@ -1,0 +1,21 @@
++package org.jpeek.calculus.eo
++alias org.jpeek.calculus.eo.np
++alias org.jpeek.calculus.eo.ndc
++alias org.jpeek.calculus.eo.nic
+
+[class] > lcc
+  if. > @
+    class.methods.length.geq 2
+    div.
+      add.
+        toFloat.
+          nic
+            class.methods
+        toFloat.
+          ndc
+            class.methods
+      toFloat.
+        np
+          class.methods
+    0.0
+
