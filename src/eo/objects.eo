@@ -10,13 +10,14 @@
 # Method object
 # name - method name
 # atts - array of attrribute objects used by method
-[name atts] > method
+[name args atts calls] > method
   name > @
 
 # Attrribute object
 # name - attrribute name
 [name] > att
   name > @
+
 
 [m1 m2] > mPair
 
