@@ -246,8 +246,6 @@
       methods.length
 
 
-
-
 [arr element] > count
   reduce. > @
     arr
@@ -262,3 +260,20 @@
             accum
             1
           accum
+
+[arr] > unique
+  reduce. > @
+    arr
+    *
+    []
+      [accum current] > reduce
+        if. > @
+          greater.
+            count
+              accum
+              current
+            0
+          accum
+          append.
+            accum
+            current
