@@ -1,0 +1,44 @@
++package org.jpeek.calculus.eo
++alias org.jpeek.calculus.eo.isAUsedByM
+
+[class] > scom
+  class.methods.length > m
+  class.atts.length > a
+  [i imax j jmax] > sum
+    if. > @
+      i.geq imax
+      0
+      if.
+        j.geq jmax
+        sum
+          i.add 1
+          imax
+          0
+          jmax
+        add.
+          sum
+            i
+            imax
+            j.add 1
+            jmax
+          if.
+            isAUsedByM
+              ^.class.atts.get i
+              ^.class.methods.get j
+            1
+            0
+
+  if. > @
+    or.
+      a.less 1
+      m.less 2
+    0
+    mul.
+      div.
+         2
+         mul.
+           m
+           sub.
+             m
+             1
+      sum 0 (m.sub 1) 1 m
