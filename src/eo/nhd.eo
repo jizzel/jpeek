@@ -1,0 +1,61 @@
++package org.jpeek.calculus.eo
++alias org.jpeek.calculus.eo.unique
++alias org.jpeek.calculus.eo.count
+
+[class] > nhd
+  if. > @
+    denominator.eq 0
+    -1.0
+    sub.
+      1.0
+      mul.
+        div.
+          2.0
+          denominator.toFloat
+        sigma.toFloat
+
+  class.methods.length > k
+
+  typesData.fst.length > l
+
+  mul. > denominator
+    mul.
+      k
+      l
+    sub.
+      k
+      1
+
+  reduce. > sigma
+    typesData.fst
+    0
+    []
+      [accumulator current] > reduce
+        count > total
+          ^.^.typesData.snd
+          current
+
+        add. > @
+          accumulator
+          mul.
+            total
+            sub.
+              ^.^.k
+              total
+
+  reduce. > typesData
+    class.methods
+    tuple
+      *
+      *
+    []
+      [accumulator current] > reduce
+        current.args > types
+        tuple > @
+          unique
+            appendAll.
+              types
+              accumulator.fst
+          appendAll.
+            unique types
+            accumulator.snd

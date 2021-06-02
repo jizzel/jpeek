@@ -34,6 +34,8 @@ public class EOCalculus implements Calculus {
                     break;
                 case "EO_CAMC": metric = new org.jpeek.calculus.eo.EOcamc(oeClass);
                     break;
+                case "EO_NHD": metric = new org.jpeek.calculus.eo.EOnhd(oeClass);
+                    break;
             }
 
             String className = ((org.jpeek.calculus.eo.EOclass)oeClass).EOname()._getData().toString();
