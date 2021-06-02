@@ -1,17 +1,33 @@
 +package org.jpeek.calculus.eo
 
+# Class object
+# name - class name
+# methods - array of method objects
+# atts - array of attrribute objects of the class
 [name methods atts] > class
+  name > @
 
-[name atts] > method
+# Method object
+# name - method name
+# args - array of argument types of the method
+# atts - array of attrribute objects used by method
+# calls - array of method calls of the method
+[name args atts calls] > method
+  name > @
 
+# Attrribute object
+# name - attrribute name
 [name] > att
+  name > @
 
+
+[m1 m2] > mPair
+
+# is Attribute used by method
+# a - attribute object
+# m - method object
 [a m] > isAUsedByM
-  loop > @
-    0
-    m.atts.length
-
-  [i imax] > loop
+  [i imax] > attsLoop
     if. > @
       i.geq imax
       false
@@ -20,9 +36,215 @@
           (^.m.atts.get i).name
           ^.a.name
         true
-        loop
+        attsLoop
           i.add 1
           imax
+  attsLoop > @
+    0
+    m.atts.length
+
+# Has or not 2 methods of a class direct connectivity
+# m1, m2 method objects
+[m1 m2] > hasDirectConnectivity
+  [i imax j jmax] > attLoop
+    if. > @
+      i.geq imax
+      false
+      if.
+        j.geq jmax
+        attLoop
+          i.add 1
+          imax
+          0
+          jmax
+        if.
+          eq.
+            name.
+              ^.m1.atts.get
+                i
+            name.
+              ^.m2.atts.get
+                j
+          true
+          attLoop
+            i
+            imax
+            j.add 1
+            jmax
+  if. > @
+    and.
+      m1.atts.length.greater 0
+      m2.atts.length.greater 0
+    attLoop
+      0
+      m1.atts.length
+      0
+      m2.atts.length
+    false
+
+
+
+#  maximum possible number of direct or indirect connections
+#  methods - array of method objects
+[methods] > np
+  if. > @
+    methods.length.less 2
+    0
+    div.
+      mul.
+        methods.length
+        sub.
+          methods.length
+          1
+      2
+
+#  number of direct connections
+#  methods - array of method objects
+[methods] > ndc
+  [i j imax] > methodsLoop
+    if. > @
+      i.geq (imax.sub 1)
+      0
+      if.
+        j.geq imax
+        methodsLoop
+          i.add 1
+          i.add 2
+          imax
+        add.
+          if.
+            hasDirectConnectivity
+              ^.methods.get
+                i
+              ^.methods.get
+                j
+            1
+            0
+          methodsLoop
+            i
+            j.add 1
+            imax
+  if. > @
+    methods.length.less 2
+    0
+    methodsLoop
+      0
+      1
+      methods.length
+
+
+#  number of indirect connections
+#  methods - array of method objects
+[methods] > nic
+  [i j k imax] > methodLoop
+    [] > idconnected12
+      if. > @
+        and.
+          not.
+            hasDirectConnectivity
+              ^.^.methods.get
+                ^.i
+              ^.^.methods.get
+                ^.j
+          and.
+            hasDirectConnectivity
+              ^.^.methods.get
+                ^.i
+              ^.^.methods.get
+                ^.k
+            hasDirectConnectivity
+              ^.^.methods.get
+                ^.j
+              ^.^.methods.get
+                ^.k
+        1
+        0
+    [] > idconnected13
+      if. > @
+        and.
+          not.
+            hasDirectConnectivity
+              ^.^.methods.get
+                ^.i
+              ^.^.methods.get
+                ^.k
+          and.
+            hasDirectConnectivity
+              ^.^.methods.get
+                ^.i
+              ^.^.methods.get
+                ^.j
+            hasDirectConnectivity
+              ^.^.methods.get
+                ^.j
+              ^.^.methods.get
+                ^.k
+        1
+        0
+    [] > idconnected23
+      if. > @
+        and.
+          not.
+            hasDirectConnectivity
+              ^.^.methods.get
+                ^.k
+              ^.^.methods.get
+                ^.j
+          and.
+            hasDirectConnectivity
+              ^.^.methods.get
+                ^.i
+              ^.^.methods.get
+                ^.k
+            hasDirectConnectivity
+              ^.^.methods.get
+                ^.i
+              ^.^.methods.get
+                ^.j
+        1
+        0
+
+    if. > @
+      i.geq
+        imax.sub 2
+      0
+      if.
+        j.geq
+          imax.sub 1
+        methodLoop
+          i.add 1
+          i.add 2
+          i.add 3
+          imax
+        if.
+          k.geq imax
+          methodLoop
+            i
+            j.add 1
+            j.add 2
+            imax
+          add.
+            methodLoop
+              i
+              j
+              k.add 1
+              imax
+            add.
+              idconnected12
+              add.
+                idconnected13
+                idconnected23
+
+
+  if. > @
+    methods.length.less 3
+    0
+    methodLoop
+      0
+      1
+      2
+      methods.length
+
 
 [arr element] > count
   reduce. > @
@@ -38,3 +260,20 @@
             accum
             1
           accum
+
+[arr] > unique
+  reduce. > @
+    arr
+    *
+    []
+      [accum current] > reduce
+        if. > @
+          greater.
+            count
+              accum
+              current
+            0
+          accum
+          append.
+            accum
+            current

@@ -40,13 +40,8 @@ import org.eolang.core.EOObject;
 import org.eolang.core.data.EODataObject;
 import org.jpeek.calculus.Calculus;
 import org.jpeek.calculus.eo.*;
-import org.jpeek.calculus.eo.EOatt;
-import org.jpeek.calculus.eo.EOclass;
-import org.jpeek.calculus.eo.EOlcom1;
-import org.jpeek.calculus.eo.EOmethod;
 import org.jpeek.calculus.xsl.XslCalculus;
 import org.jpeek.skeleton.Skeleton;
-import org.jpeek.skeleton.eo.EOSkeleton;
 import org.xembly.Directives;
 import org.xembly.Xembler;
 
@@ -54,7 +49,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -176,8 +170,6 @@ public final class App {
         this.save(skeleton.toString(), "skeleton.xml");
         final XSL chain = new XSLChain(layers);
 
-        final EOSkeleton eoSkeleton = new EOSkeleton(chain.transform(skeleton));
-        final List<EOObject> clArray = eoSkeleton.getClassFieldsAndMethods();
         final Calculus eoCalc = new EOCalculus();
         final Collection<Report> reports = new LinkedList<>();
         final Calculus xsl = new XslCalculus();
@@ -205,11 +197,35 @@ public final class App {
                     )
             );
         }
-        if (this.params.containsKey("EO_SCOM")) {
+        if (this.params.containsKey("EO_TCC")) {
             reports.add(
                     new XslReport(
                             chain.transform(skeleton), eoCalc,
-                            new ReportData("EO_SCOM")
+                            new ReportData("EO_TCC")
+                    )
+            );
+        }
+        if (this.params.containsKey("EO_LCC")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_LCC")
+                    )
+            );
+        }
+        if (this.params.containsKey("EO_CAMC")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_CAMC")
+                    )
+            );
+        }
+        if (this.params.containsKey("EO_NHD")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_NHD")
                     )
             );
         }

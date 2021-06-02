@@ -1,0 +1,34 @@
++package org.jpeek.calculus.eo
++alias org.jpeek.calculus.eo.unique
+
+[class] > camc
+  if. > @
+    kl.eq 0
+    -1.0
+    div.
+      sigma.toFloat
+      kl.toFloat
+
+  class.methods.length > k
+  metricData.fst > sigma
+  metricData.snd.length > l
+  mul. > kl
+    k
+    l
+
+  reduce. > metricData
+    class.methods
+    tuple
+      0
+      *
+    []
+      [accumulator current] > reduce
+        unique (current.args) > types
+        tuple > @
+          add.
+            types.length
+            accumulator.fst
+          unique
+            appendAll.
+              types
+              accumulator.snd
