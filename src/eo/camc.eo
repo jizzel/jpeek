@@ -3,20 +3,11 @@
 
 [class] > camc
   if. > @
-    k.eq 0
-    0.0
-    if.
-      k.eq 1
-      1.0
-      if.
-        kl.eq 0
-        -1.0
-        div.
-          sigma.toFloat
-          toFloat.
-            mul.
-              k
-              l
+    kl.eq 0
+    -1.0
+    div.
+      sigma.toFloat
+      kl.toFloat
 
   class.methods.length > k
   metricData.fst > sigma
