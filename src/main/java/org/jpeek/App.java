@@ -221,6 +221,14 @@ public final class App {
                     )
             );
         }
+        if (this.params.containsKey("EO_NHD")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_NHD")
+                    )
+            );
+        }
         if (this.params.containsKey("LCOM")) {
             reports.add(
                 new XslReport(
