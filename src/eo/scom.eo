@@ -1,44 +1,55 @@
 +package org.jpeek.calculus.eo
 +alias org.jpeek.calculus.eo.isAUsedByM
++alias org.jpeek.calculus.eo.unique
 
 [class] > scom
-  class.methods.length > m
-  class.atts.length > a
-  [i imax j jmax] > sum
-    if. > @
-      i.geq imax
+  class.methods.length > numOfMethods
+  class.atts.length > numOfAttributes
+  [i iMax j jMax] > sum
+    ^.class.methods.get i > firstM
+    ^.class.methods.get j > secondM
+    unique (firstM.atts.appendAll secondM.atts) > cardUnion
+    (cardUnion.toFloat).div ^.numOfAttributes.toFloat > weightFactor
+
+    reduce. > cardIntersection
+      firstM.atts
       0
-      if.
-        j.geq jmax
+      []
+        [accumulator current] > reduce
+          if. > @
+            isAUsedByM current ^.secondM
+            add.
+              accumulator
+              1
+            accumulator
+
+    (cardIntersection.toFloat).div ^.numOfAttributes.toFloat > connectionIntensity
+    if. > @
+      j.eq jMax
+      mul.
+        connectionIntensity
+        weightFactor
+      add.
         sum
           i.add 1
-          imax
-          0
-          jmax
-        add.
-          sum
-            i
-            imax
-            j.add 1
-            jmax
-          if.
-            isAUsedByM
-              ^.class.atts.get i
-              ^.class.methods.get j
-            1
-            0
+          iMax
+          i.add 2
+          jMax
+        mul.
+          connectionIntensity
+          weightFactor
 
   if. > @
     or.
-      a.less 1
-      m.less 2
-    0
+      numOfAttributes.less 1
+      numOfMethods.less 2
+    "NaN"
     mul.
       div.
-         2
+         2.0
          mul.
-           m
+           numOfMethods.toFloat
            sub.
-             m
-             1
-      sum 0 (m.sub 1) 1 m
+             numOfMethods.toFloat
+             1.0
+      sum 0 (numOfMethods.sub 1) 1 numOfMethods
