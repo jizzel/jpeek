@@ -43,7 +43,7 @@
     or.
       numOfAttributes.less 1
       numOfMethods.less 2
-    "NaN"
+    0
     mul.
       div.
          2.0
