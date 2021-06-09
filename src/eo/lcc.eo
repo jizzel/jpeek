@@ -1,18 +1,14 @@
 +package org.jpeek.calculus.eo
 +alias org.jpeek.calculus.eo.np
-+alias org.jpeek.calculus.eo.ndc
-+alias org.jpeek.calculus.eo.nic
++alias org.jpeek.calculus.eo.getConnectedPairs
 
 [class] > lcc
   if. > @
     class.methods.length.geq 2
     div.
-      add.
-        toFloat.
-          nic
-            class.methods
-        toFloat.
-          ndc
+      toFloat.
+        length.
+          getConnectedPairs
             class.methods
       toFloat.
         np

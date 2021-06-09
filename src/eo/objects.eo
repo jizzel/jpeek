@@ -1,12 +1,13 @@
 +package org.jpeek.calculus.eo
 
+# ===================================================================
 # Class object
 # name - class name
 # methods - array of method objects
 # atts - array of attrribute objects of the class
 [name methods atts] > class
   name > @
-
+# ===================================================================
 # Method object
 # name - method name
 # args - array of argument types of the method
@@ -14,15 +15,54 @@
 # calls - array of method calls of the method
 [name args atts calls] > method
   name > @
-
+# ===================================================================
 # Attrribute object
 # name - attrribute name
 [name] > att
   name > @
+# ===================================================================
+# Index pair
+[i j] > iPair
+  [pairArray] > inArray
+    [i imax] > paLoop
+      if. > @
+        i.geq imax
+        false
+        or.
+          ^.^.eq
+            ^.pairArray.get i
+          paLoop
+            i.add 1
+            imax
 
+    and. > @
+      pairArray.length.greater 0
+      paLoop
+        0
+        pairArray.length
 
-[m1 m2] > mPair
+  [p] > eq
+    or. > @
+      and.
+        eq.
+          ^.i
+          p.i
+        eq.
+          ^.j
+          p.j
+      and.
+        eq.
+          ^.i
+          p.j
+        eq.
+          ^.j
+          p.i
 
+  not. > @
+    eq.
+      i
+      j
+# ===================================================================
 # is Attribute used by method
 # a - attribute object
 # m - method object
@@ -42,7 +82,7 @@
   attsLoop > @
     0
     m.atts.length
-
+# ===================================================================
 # Has or not 2 methods of a class direct connectivity
 # m1, m2 method objects
 [m1 m2] > hasDirectConnectivity
@@ -81,9 +121,159 @@
       0
       m2.atts.length
     false
+# ===================================================================
+[methods] > getDirectConnectPairs
+  [i j imax] > dcpLoop
+    if. > @
+      i.geq
+        imax.sub 1
+      *
+      if.
+        j.geq
+          imax
+        dcpLoop
+          i.add 1
+          i.add 2
+          imax
+        appendAll.
+          dcpLoop
+            i
+            j.add 1
+            imax
+          if.
+            hasDirectConnectivity
+              ^.methods.get i
+              ^.methods.get j
+            *
+              iPair i j
+            *
+  if. > @
+    less.
+      methods.length
+      2
+    *
+    dcpLoop
+      0
+      1
+      methods.length
+# ===================================================================
+[methods] > getConnectedPairs
+  getDirectConnectPairs > dcp!
+    methods
 
+  [pairs] > getAllPairs
+    [] > newPairs!
+      [i j imax] > npLoop
+        (^.^.pairs.get i) > pairI!
+        (^.^.pairs.get j) > pairJ!
+        if. > newPair!
+          eq.
+            pairI.i
+            pairJ.i
+          iPair
+            pairI.j
+            pairJ.j
+          if.
+            eq.
+              pairI.j
+              pairJ.j
+            iPair
+              pairI.i
+              pairJ.i
+            if.
+              eq.
+                pairI.i
+                pairJ.j
+              iPair
+                pairI.j
+                pairJ.i
+              if.
+                eq.
+                  pairI.j
+                  pairJ.i
+                iPair
+                  pairI.i
+                  pairJ.j
+                iPair
+                  i
+                  i
+        if. > @
+          geq.
+            i<
+            imax.sub
+              1
+          *
+          if.
+            j.geq imax
+            npLoop
+              i.add 1
+              i.add 2
+              imax
+            appendAll.
+              npLoop
+                i
+                j.add 1
+                imax
+              if.
+                newPair
+                *
+                  newPair
+                *
 
+      if. > @
+        ^.pairs.length.less 2
+        *
+        npLoop
+          0
+          1
+          ^.pairs.length
 
+    [] > joinedPairs!
+      [i imax] > joinLoop
+        (^.^.newPairs.get i) > pairI!
+        joinLoop > otherPairs!
+          i.add 1
+          imax
+        if. > @
+          i.geq imax
+          *
+          appendAll.
+            otherPairs
+            if.
+              and.
+                pairI
+                not.
+                  or.
+                    pairI.inArray
+                      otherPairs
+                    pairI.inArray
+                      ^.^.pairs
+              *
+                pairI
+              *
+      if. > @
+        ^.newPairs.length.eq 0
+        ^.pairs
+        joinLoop
+          0
+          ^.newPairs.length
+    if. > @
+      or.
+        newPairs.length.eq 0
+        joinedPairs.length.eq 0
+      pairs
+      getAllPairs
+        appendAll.
+          pairs
+          joinedPairs
+
+  if. > @
+    less.
+      methods.length
+      2
+    *
+    getAllPairs dcp
+# ===================================================================
 #  maximum possible number of direct or indirect connections
 #  methods - array of method objects
 [methods] > np
@@ -97,7 +287,7 @@
           methods.length
           1
       2
-
+# ===================================================================
 #  number of direct connections
 #  methods - array of method objects
 [methods] > ndc
@@ -131,121 +321,7 @@
       0
       1
       methods.length
-
-
-#  number of indirect connections
-#  methods - array of method objects
-[methods] > nic
-  [i j k imax] > methodLoop
-    [] > idconnected12
-      if. > @
-        and.
-          not.
-            hasDirectConnectivity
-              ^.^.methods.get
-                ^.i
-              ^.^.methods.get
-                ^.j
-          and.
-            hasDirectConnectivity
-              ^.^.methods.get
-                ^.i
-              ^.^.methods.get
-                ^.k
-            hasDirectConnectivity
-              ^.^.methods.get
-                ^.j
-              ^.^.methods.get
-                ^.k
-        1
-        0
-    [] > idconnected13
-      if. > @
-        and.
-          not.
-            hasDirectConnectivity
-              ^.^.methods.get
-                ^.i
-              ^.^.methods.get
-                ^.k
-          and.
-            hasDirectConnectivity
-              ^.^.methods.get
-                ^.i
-              ^.^.methods.get
-                ^.j
-            hasDirectConnectivity
-              ^.^.methods.get
-                ^.j
-              ^.^.methods.get
-                ^.k
-        1
-        0
-    [] > idconnected23
-      if. > @
-        and.
-          not.
-            hasDirectConnectivity
-              ^.^.methods.get
-                ^.k
-              ^.^.methods.get
-                ^.j
-          and.
-            hasDirectConnectivity
-              ^.^.methods.get
-                ^.i
-              ^.^.methods.get
-                ^.k
-            hasDirectConnectivity
-              ^.^.methods.get
-                ^.i
-              ^.^.methods.get
-                ^.j
-        1
-        0
-
-    if. > @
-      i.geq
-        imax.sub 2
-      0
-      if.
-        j.geq
-          imax.sub 1
-        methodLoop
-          i.add 1
-          i.add 2
-          i.add 3
-          imax
-        if.
-          k.geq imax
-          methodLoop
-            i
-            j.add 1
-            j.add 2
-            imax
-          add.
-            methodLoop
-              i
-              j
-              k.add 1
-              imax
-            add.
-              idconnected12
-              add.
-                idconnected13
-                idconnected23
-
-
-  if. > @
-    methods.length.less 3
-    0
-    methodLoop
-      0
-      1
-      2
-      methods.length
-
-
+# ===================================================================
 [arr element] > count
   reduce. > @
     arr
@@ -260,7 +336,7 @@
             accum
             1
           accum
-
+# ===================================================================
 [arr] > unique
   reduce. > @
     arr
