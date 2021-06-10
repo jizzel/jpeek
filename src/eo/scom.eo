@@ -6,10 +6,13 @@
   class.methods.length > numOfMethods
   class.atts.length > numOfAttributes
   [i iMax j jMax] > sum
-    ^.class.methods.get i > firstM
-    ^.class.methods.get j > secondM
-    unique (firstM.atts.appendAll secondM.atts) > cardUnion
-    (cardUnion.toFloat).div ^.numOfAttributes.toFloat > weightFactor
+    (^.class.methods.get i) > firstM
+    (^.class.methods.get j) > secondM
+    unique > cardUnion
+      appendAll.
+        firstM.atts
+        secondM.atts
+    (cardUnion.length.toFloat).div (^.numOfAttributes.toFloat) > weightFactor
 
     reduce. > cardIntersection
       firstM.atts
@@ -17,33 +20,38 @@
       []
         [accumulator current] > reduce
           if. > @
-            isAUsedByM current ^.secondM
+            isAUsedByM current (^.^.secondM)
             add.
               accumulator
               1
             accumulator
 
-    (cardIntersection.toFloat).div ^.numOfAttributes.toFloat > connectionIntensity
+    (cardIntersection.toFloat).div (^.numOfAttributes.toFloat) > connectionIntensity
     if. > @
-      j.eq jMax
-      mul.
-        connectionIntensity
-        weightFactor
-      add.
+      i.geq iMax
+      0.0
+      if.
+        j.geq jMax
         sum
           i.add 1
           iMax
           i.add 2
           jMax
-        mul.
-          connectionIntensity
-          weightFactor
+        add.
+          sum
+            i
+            iMax
+            j.add 1
+            jMax
+          mul.
+            connectionIntensity
+            weightFactor
 
   if. > @
     or.
       numOfAttributes.less 1
       numOfMethods.less 2
-    0
+    0.0
     mul.
       div.
          2.0

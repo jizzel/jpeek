@@ -36,10 +36,13 @@ public class EOCalculus implements Calculus {
                     break;
                 case "EO_NHD": metric = new org.jpeek.calculus.eo.EOnhd(oeClass);
                     break;
+                case "EO_SCOM": metric = new org.jpeek.calculus.eo.EOscom(oeClass);
+                    break;
             }
 
             String className = ((org.jpeek.calculus.eo.EOclass)oeClass).EOname()._getData().toString();
             int i = className.lastIndexOf('.');
+            System.err.println(className);
             String packageName = className.substring(0,i);
             className = className.substring(i+1);
             packages.putIfAbsent(packageName, new Directives());

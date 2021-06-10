@@ -199,7 +199,7 @@
                   i
         if. > @
           geq.
-            i<
+            i
             imax.sub
               1
           *
