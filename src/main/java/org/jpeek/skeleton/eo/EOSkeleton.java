@@ -36,7 +36,6 @@ public final class EOSkeleton {
             String packageName = __xml_package.xpath("@id").get(0);
             for (XML  __xml_class : __xml_package.nodes("//package[@id='"+packageName+"']//class")){
                 String className = packageName + "." + __xml_class.xpath("@id").get(0);
-                String resString = "";
                 EOarray classAttributes = new EOarray();
 //              List of class attributes
                 for (XML attr : __xml_class.nodes("attributes/attribute")) {

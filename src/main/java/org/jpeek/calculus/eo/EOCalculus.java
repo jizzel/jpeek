@@ -38,6 +38,8 @@ public class EOCalculus implements Calculus {
                     break;
                 case "EO_SCOM": metric = new org.jpeek.calculus.eo.EOscom(oeClass);
                     break;
+                case "EO_OCC": metric = new org.jpeek.calculus.eo.EOocc(oeClass);
+                    break;
             }
 
             String className = ((org.jpeek.calculus.eo.EOclass)oeClass).EOname()._getData().toString();

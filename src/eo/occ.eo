@@ -1,4 +1,35 @@
 +package org.jpeek.calculus.eo
-+alias org.jpeek.calculus.eo.isAUsedByM
++alias org.jpeek.calculus.eo.occGraph
++alias org.jpeek.calculus.eo.countPairsWithIndex
 
 [class] > occ
+  class.methods.length > n!
+  occGraph > graph!
+    class
+
+  [i imax] > indexLoop
+    countPairsWithIndex > currValue!
+      ^.graph
+      i
+    indexLoop > maxValue!
+      i.add 1
+      imax
+
+    if. > @
+      i.geq imax
+      0
+      if.
+        currValue.greater maxValue
+        currValue
+        maxValue
+  if. > @
+    n.less 2
+    0.0
+    div.
+      toFloat.
+        indexLoop 0 n
+      toFloat.
+        n.sub 1
+
+
+

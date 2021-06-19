@@ -7,6 +7,7 @@
 # atts - array of attrribute objects of the class
 [name methods atts] > class
   name > @
+
 # ===================================================================
 # Method object
 # name - method name
@@ -14,12 +15,49 @@
 # atts - array of attrribute objects used by method
 # calls - array of method calls of the method
 [name args atts calls] > method
+
+  [a] > isUsingAttribute
+    [i imax] > attsLoop
+      if. > @
+        i.geq imax
+        false
+        if.
+          eq.
+            (^.^.atts.get i).name
+            ^.a.name
+          true
+          attsLoop
+            i.add 1
+            imax
+    attsLoop > @
+      0
+      ^.atts.length
+
+  [m] > isCallsMethod
+    [i imax] > mLoop
+      if. > @
+        i.geq imax
+        false
+        if.
+          eq.
+            ^.^.calls.get i
+            ^.m.name
+          true
+          mLoop
+            i.add 1
+            imax
+    mLoop > @
+      0
+      ^.calls.length
+
   name > @
+
 # ===================================================================
-# Attrribute object
-# name - attrribute name
+# Attribute object
+# name - attribute name
 [name] > att
   name > @
+
 # ===================================================================
 # Index pair
 [i j] > iPair
@@ -62,12 +100,13 @@
     eq.
       i
       j
+
 # ===================================================================
 # is Attribute used by method
 # a - attribute object
 # m - method object
 [a m] > isAUsedByM
-  [i imax] > attsLoop
+  [i imax] > attributeLoop
     if. > @
       i.geq imax
       false
@@ -76,14 +115,15 @@
           (^.m.atts.get i).name
           ^.a.name
         true
-        attsLoop
+        attributeLoop
           i.add 1
           imax
-  attsLoop > @
+  attributeLoop > @
     0
     m.atts.length
+
 # ===================================================================
-# Has or not 2 methods of a class direct connectivity
+# Has or not 2 methods of a class direct connectivity(both methods are using same attribute(s))
 # m1, m2 method objects
 [m1 m2] > hasDirectConnectivity
   [i imax j jmax] > attLoop
@@ -121,6 +161,7 @@
       0
       m2.atts.length
     false
+
 # ===================================================================
 [methods] > getDirectConnectPairs
   [i j imax] > dcpLoop
@@ -156,123 +197,218 @@
       0
       1
       methods.length
+
+# ===================================================================
+[pairs] > getAllPairs
+  [] > newPairs!
+    [i j imax] > npLoop
+      (^.^.pairs.get i) > pairI!
+      (^.^.pairs.get j) > pairJ!
+      if. > newPair!
+        eq.
+          pairI.i
+          pairJ.i
+        iPair
+          pairI.j
+          pairJ.j
+        if.
+          eq.
+            pairI.j
+            pairJ.j
+          iPair
+            pairI.i
+            pairJ.i
+          if.
+            eq.
+              pairI.i
+              pairJ.j
+            iPair
+              pairI.j
+              pairJ.i
+            if.
+              eq.
+                pairI.j
+                pairJ.i
+              iPair
+                pairI.i
+                pairJ.j
+              iPair
+                i
+                i
+      if. > @
+        geq.
+          i
+          imax.sub
+            1
+        *
+        if.
+          j.geq imax
+          npLoop
+            i.add 1
+            i.add 2
+            imax
+          appendAll.
+            npLoop
+              i
+              j.add 1
+              imax
+            if.
+              newPair
+              *
+                newPair
+              *
+
+    if. > @
+      ^.pairs.length.less 2
+      *
+      npLoop
+        0
+        1
+        ^.pairs.length
+
+  [] > joinedPairs!
+    [i imax] > joinLoop
+      (^.^.newPairs.get i) > pairI!
+      joinLoop > otherPairs!
+        i.add 1
+        imax
+      if. > @
+        i.geq imax
+        *
+        appendAll.
+          otherPairs
+          if.
+            and.
+              pairI
+              not.
+                or.
+                  pairI.inArray
+                    otherPairs
+                  pairI.inArray
+                    ^.^.pairs
+            *
+              pairI
+            *
+    if. > @
+      ^.newPairs.length.eq 0
+      ^.pairs
+      joinLoop
+        0
+        ^.newPairs.length
+  if. > @
+    or.
+      newPairs.length.eq 0
+      joinedPairs.length.eq 0
+    pairs
+    getAllPairs
+      appendAll.
+        pairs
+        joinedPairs
+
 # ===================================================================
 [methods] > getConnectedPairs
   getDirectConnectPairs > dcp!
     methods
-
-  [pairs] > getAllPairs
-    [] > newPairs!
-      [i j imax] > npLoop
-        (^.^.pairs.get i) > pairI!
-        (^.^.pairs.get j) > pairJ!
-        if. > newPair!
-          eq.
-            pairI.i
-            pairJ.i
-          iPair
-            pairI.j
-            pairJ.j
-          if.
-            eq.
-              pairI.j
-              pairJ.j
-            iPair
-              pairI.i
-              pairJ.i
-            if.
-              eq.
-                pairI.i
-                pairJ.j
-              iPair
-                pairI.j
-                pairJ.i
-              if.
-                eq.
-                  pairI.j
-                  pairJ.i
-                iPair
-                  pairI.i
-                  pairJ.j
-                iPair
-                  i
-                  i
-        if. > @
-          geq.
-            i
-            imax.sub
-              1
-          *
-          if.
-            j.geq imax
-            npLoop
-              i.add 1
-              i.add 2
-              imax
-            appendAll.
-              npLoop
-                i
-                j.add 1
-                imax
-              if.
-                newPair
-                *
-                  newPair
-                *
-
-      if. > @
-        ^.pairs.length.less 2
-        *
-        npLoop
-          0
-          1
-          ^.pairs.length
-
-    [] > joinedPairs!
-      [i imax] > joinLoop
-        (^.^.newPairs.get i) > pairI!
-        joinLoop > otherPairs!
-          i.add 1
-          imax
-        if. > @
-          i.geq imax
-          *
-          appendAll.
-            otherPairs
-            if.
-              and.
-                pairI
-                not.
-                  or.
-                    pairI.inArray
-                      otherPairs
-                    pairI.inArray
-                      ^.^.pairs
-              *
-                pairI
-              *
-      if. > @
-        ^.newPairs.length.eq 0
-        ^.pairs
-        joinLoop
-          0
-          ^.newPairs.length
-    if. > @
-      or.
-        newPairs.length.eq 0
-        joinedPairs.length.eq 0
-      pairs
-      getAllPairs
-        appendAll.
-          pairs
-          joinedPairs
-
   if. > @
     less.
       methods.length
       2
     *
     getAllPairs dcp
+
+# ===================================================================
+# Checks if a pair of methods is a pair in which one calls the other
+# m1, m2 method objects
+# Result is EObool object
+[m1 m2] > isCallPair
+  or. > @
+    m1.isCallsMethod m2
+    m2.isCallsMethod m1
+
+# ===================================================================
+#  Creates an array of  iPairs of methods  in which one calls the other directly or or through other methods
+#  methods - array of method objects
+#  Result is EOarray of iPar objects
+[methods] > getCallPairs
+  [i j imax] > directCalls
+    ^.methods.get i > methodI
+    ^.methods.get j > methodJ
+    iPair i j > newPair
+    directCalls > restArray!
+      i
+      j.add 1
+      imax
+
+    if. > @
+      i.geq (imax.sub 1)
+      *
+      if.
+        j.geq imax
+        directCalls
+          i.add 1
+          i.add 2
+          imax
+        restArray.appendAll
+          if.
+            and.
+              isCallPair methodI methodJ
+              not.
+                newPair.inArray restArray
+            *
+              newPair
+            *
+  if. > @
+    less.
+      methods.length
+      2
+    *
+    getAllPairs
+      directCalls 0 1 methods.length
+# ===================================================================
+# Get an array of iPair objects representing Weak-connection graph for OCC metric
+[class] > occGraph
+  getCallPairs > callPairs!
+    class.methods
+  getDirectConnectPairs > dcp!
+    class.methods
+
+  [i imax] > arrLoop
+    arrLoop > restArray!
+      i.add 1
+      imax
+    ^.dcp.get i > currentPair
+    if. > @
+      i.geq imax
+      ^.callPairs
+      appendAll.
+        restArray
+        if.
+          currentPair.inArray restArray
+          *
+          *
+            currentPair
+
+  if. > @
+    callPairs.length.eq 0
+    dcp
+    if.
+      dcp.length.eq 0
+      callPairs
+      arrLoop 0 dcp.length
+# ===================================================================
+[pairArray index] > countPairsWithIndex
+  reduce. > @
+    pairArray
+    0
+    []
+      [accum current] > reduce
+        if. > @
+          or.
+            ^.^.index.eq (current.i)
+            ^.^.index.eq (current.j)
+          accum.add 1
+          accum
+
 # ===================================================================
 #  maximum possible number of direct or indirect connections
 #  methods - array of method objects
