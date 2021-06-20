@@ -44,7 +44,6 @@ public class EOCalculus implements Calculus {
 
             String className = ((org.jpeek.calculus.eo.EOclass)oeClass).EOname()._getData().toString();
             int i = className.lastIndexOf('.');
-            System.err.println(className);
             String packageName = className.substring(0,i);
             className = className.substring(i+1);
             packages.putIfAbsent(packageName, new Directives());
