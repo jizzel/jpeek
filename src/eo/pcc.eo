@@ -2,14 +2,15 @@
 +alias org.jpeek.calculus.eo.isAUsedByM
 
 [class] > pcc
+  class.methods.length > numOfMethods
   [i imax] > reachableM
 
   if. > @
     n.greater 1
     div.
       toFloat.
-        reachableM 0 n
+        reachableM 0 numOfMethods
       toFloat.
-        n.sub 1
+        numOfMethods.sub 1
     0.0
 
