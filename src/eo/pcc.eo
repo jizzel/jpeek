@@ -2,4 +2,14 @@
 +alias org.jpeek.calculus.eo.isAUsedByM
 
 [class] > pcc
+  [i imax] > reachableM
+
+  if. > @
+    n.greater 1
+    div.
+      toFloat.
+        reachableM 0 n
+      toFloat.
+        n.sub 1
+    0.0
 
