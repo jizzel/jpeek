@@ -6,7 +6,7 @@
   [i imax] > reachableM
 
   if. > @
-    n.greater 1
+    numOfMethods.greater 1
     div.
       toFloat.
         reachableM 0 numOfMethods
