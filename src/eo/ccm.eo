@@ -1,0 +1,122 @@
++package org.jpeek.calculus.eo
++alias org.jpeek.calculus.eo.removeat
+
+[class] > connectionGraph
+   div. > countEdges
+    add.
+      adjList.length
+      reduce.
+        adjList
+        0
+        []
+          [accumulator currElement] > reduce
+            add. > @
+              accumulator
+              currElement.length
+    2
+
+  [] > countConnectedComponents
+    rec > @
+      ^.adjList
+      0
+
+    [nodesList currNode] > visitAndRemove
+      rec > @
+        nodesList
+        currNode
+        0
+
+      [nodes node index] > rec
+        nodes.get index > currentNodeSublist
+        currentNodeSublist.get 0 > currentNode
+
+        if. > @
+          index.geq nodes.length
+          nodes
+          if.
+            currentNode.eq node
+            reducei.
+              currentNodeSublist
+              nodes.removeat index
+              []
+                [accum curr i] > reducei
+                  if. > @
+                    i.eq 0
+                    accum
+                    ^.^.^.rec
+                      accum
+                      curr
+                      0
+            ^.rec
+              nodes
+              node
+              index.add 1
+
+    [nodesList currCount] > rec
+      if. > @
+        nodesList.length.eq 0
+        currCount
+        ^.rec
+          ^.visitAndRemove
+            nodesList
+            (nodesList.get 0).get 0
+          currCount.add 1
+
+  buildAdjacencyList (class.methods) > adjList
+
+  [method] > getConjucentElements
+    rec > @
+      *
+      0
+
+    ^.class.methods > allMethods
+
+    [resultArray currIndex] > rec
+      ^.allMethods.get currIndex > currMethod
+
+      if. > @
+        currIndex.geq (^.allMethods.length)
+        resultArray
+        if.
+          and.
+            not.
+              eq.
+                ^.method
+                currMethod
+            or.
+              or.
+                callsMethod.
+                  ^.method
+                  currMethod
+                callsMethod.
+                  currMethod
+                  ^.method
+              accessSameAttribute.
+                ^.method
+                currMethod
+          ^.rec
+            append.
+              resultArray
+              currMethod
+            currIndex.add 1
+          ^.rec
+            resultArray
+            currIndex.add 1
+
+  [nodes] > buildAdjacencyList
+    rec > @
+      *
+      0
+
+    [adjList currIndex] > rec
+      ^.nodes.get currIndex > currElement
+      if. > @
+        currIndex.geq (^.nodes.length)
+        adjList
+        ^.rec
+          append.
+            adjList
+            appendAll.
+              * currElement
+              ^.getConjucentElements currElement
+          currIndex.add 1

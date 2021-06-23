@@ -28,6 +28,8 @@ public class EOCalculus implements Calculus {
                     break;
                 case "EO_LCOM3": metric = new org.jpeek.calculus.eo.EOlcom3(oeClass);
                     break;
+                case "EO_LCOM4": metric = new org.jpeek.calculus.eo.EOlcom4(oeClass);
+                    break;
                 case "EO_TCC": metric = new org.jpeek.calculus.eo.EOtcc(oeClass);
                     break;
                 case "EO_LCC": metric = new org.jpeek.calculus.eo.EOlcc(oeClass);

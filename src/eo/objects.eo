@@ -15,6 +15,7 @@
 # atts - array of attrribute objects used by method
 # calls - array of method calls of the method
 [name args atts calls] > method
+  name > @
 
   [a] > isUsingAttribute
     [i imax] > attsLoop
@@ -50,7 +51,31 @@
       0
       ^.calls.length
 
-  name > @
+  [att] > accessesAtt
+    greater. > @
+      count
+        ^.atts
+        att
+      0
+
+  [method] > callsMethod
+    greater. > @
+      count
+        ^.calls
+        method
+      0
+
+  [method] > accessSameAttribute
+    rec 0 > @
+
+    [currIndex] > rec
+      ^.method.atts.get currIndex > currAtt
+      if. > @
+        currIndex.geq (^.method.atts.length)
+        false
+        or.
+          ^.^.accessesAtt currAtt
+          rec (currIndex.add 1)
 
 # ===================================================================
 # Attribute object
@@ -489,3 +514,51 @@
           append.
             accum
             current
+# ===================================================================
+[arr position] > removeat
+  merge > @
+    slice
+      arr
+      0
+      position
+    slice
+      arr
+      add.
+        position
+        1
+      arr.length
+# ===================================================================
+[arr start end] > slice
+  subSlice > @
+    arr
+    *
+    start
+    end
+
+  [arr accum start end] > subSlice
+    if. > @
+      less.
+        start
+        end
+      subSlice
+        arr
+        append.
+          accum
+          get.
+            arr
+            start
+        add.
+          start
+          1
+        end
+      accum
+# ===================================================================
+[arr1 arr2] > merge
+  reduce. > @
+    arr2
+    arr1
+    []
+      [accum current] > reduce
+        append. > @
+          accum
+          current
