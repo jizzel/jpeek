@@ -245,6 +245,14 @@ public final class App {
                     )
             );
         }
+        if (this.params.containsKey("EO_PCC")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_PCC")
+                    )
+            );
+        }
         if (this.params.containsKey("LCOM")) {
             reports.add(
                 new XslReport(
