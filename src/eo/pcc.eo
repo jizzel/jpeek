@@ -3,8 +3,9 @@
 
 [class] > pcc
   class.methods.length > numOfMethods
-  [i imax j jMax] > reachableM
+  [i imax j jMax count] > reachableM
     (^.class.methods.get i) > RsM
+    (^.class.methods.get j) > Mi
 
     reduce. > getReachabilityM
       RsM.attsPut
@@ -12,21 +13,26 @@
       []
         [accumulator current] > reduce
           if. > @
-            isAUsedByM current (^.^.secondM)
+            isAUsedByM current (^.Mi)
             add.
               accumulator
               1
             accumulator
 
+    [] > connectionCount
+
     if. > @
       i.greater imax
+      count
+      if. >
+        count.greater 1
 
 
   if. > @
     numOfMethods.greater 1
     div.
       toFloat.
-        reachableM 0 numOfMethods
+        reachableM 0 numOfMethods 1 (numOfMethods.add 1) 0
       toFloat.
         numOfMethods.sub 1
     0.0
