@@ -12,9 +12,11 @@
 # Method object
 # name - method name
 # args - array of argument types of the method
-# atts - array of attrribute objects used by method
+# atts - array of attribute objects used by method
+# attsGet - array of attribute objects read by method
+# attsPut - array of attribute objects written to by method
 # calls - array of method calls of the method
-[name args atts calls] > method
+[name args atts attsGet attsPut calls] > method
 
   [a] > isUsingAttribute
     [i imax] > attsLoop

@@ -50,6 +50,8 @@ public final class EOSkeleton {
 
 
                     EOarray methodAttributes = new EOarray();
+                    EOarray methodGetAttributes = new EOarray();
+                    EOarray methodPutAttributes = new EOarray();
                     EOarray methodArguments = new EOarray();
                     EOarray methodCalls = new EOarray();
                     String methodName = _xml.xpath("@name").get(0);
@@ -65,6 +67,7 @@ public final class EOSkeleton {
                     }
                     for (XML _xml_1 : _xml.nodes("ops")) {
 //                      list of fields/attributes used by this method
+                        // call put get
                         for(XML _xml_2 : _xml_1.nodes("op")){
                             String opCode =  _xml_2.xpath("@code").get(0);
                             if("call".equals(opCode)){
@@ -73,9 +76,16 @@ public final class EOSkeleton {
                                     callName = callName.replaceFirst(className + ".","");
                                     methodCalls = methodCalls.EOappend(new EOatt(new EOstring(callName)));
                                 }
-                            }else{
+                            }else if("put".equals(opCode)){
                                 String attName = _xml_2.xpath("text()").get(0).trim();
                                 if(!attName.equals("")){
+                                    methodPutAttributes = methodPutAttributes.EOappend(new EOatt(new EOstring(attName)));
+                                    methodAttributes = methodAttributes.EOappend(new EOatt(new EOstring(attName)));
+                                }
+                            }else if ("get".equals(opCode)){
+                                String attName = _xml_2.xpath("text()").get(0).trim();
+                                if(!attName.equals("")){
+                                    methodGetAttributes = methodGetAttributes.EOappend(new EOatt(new EOstring(attName)));
                                     methodAttributes = methodAttributes.EOappend(new EOatt(new EOstring(attName)));
                                 }
                             }
@@ -86,6 +96,8 @@ public final class EOSkeleton {
                                     new EOstring(methodName),
                                     methodArguments,
                                     methodAttributes,
+                                    methodGetAttributes,
+                                    methodPutAttributes,
                                     methodCalls
                             ));
 
