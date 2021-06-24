@@ -1,7 +1,28 @@
 +package org.jpeek.calculus.eo
 +alias org.jpeek.calculus.eo.removeat
 
+[class] > ccm
+  connectionGraph class > graph
+
+  if. > @
+    denom.eq 0
+    -1
+    div.
+      graph.countEdges.toFloat
+      toFloat.
+        mul. > denom
+          graph.maxPossibleEdges
+          graph.countConnectedComponents
+
 [class] > connectionGraph
+  div. > maxPossibleEdges
+    mul.
+      class.methods.length
+      sub.
+        class.methods.length
+        1
+    2
+
   div. > countEdges
     sub.
       reduce.
