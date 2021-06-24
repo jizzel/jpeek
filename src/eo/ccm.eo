@@ -2,9 +2,8 @@
 +alias org.jpeek.calculus.eo.removeat
 
 [class] > connectionGraph
-   div. > countEdges
-    add.
-      adjList.length
+  div. > countEdges
+    sub.
       reduce.
         adjList
         0
@@ -13,12 +12,23 @@
             add. > @
               accumulator
               currElement.length
+      adjList.length
     2
 
   [] > countConnectedComponents
     rec > @
       ^.adjList
       0
+
+    [nodesList currCount] > rec
+      if. > @
+        nodesList.length.eq 0
+        currCount
+        ^.rec
+          ^.visitAndRemove
+            nodesList
+            (nodesList.get 0).get 0
+          currCount.add 1
 
     [nodesList currNode] > visitAndRemove
       rec > @
@@ -31,13 +41,13 @@
         currentNodeSublist.get 0 > currentNode
 
         if. > @
-          index.geq nodes.length
+          index.geq (nodes.length)
           nodes
           if.
             currentNode.eq node
             reducei.
               currentNodeSublist
-              nodes.removeat index
+              removeat nodes index
               []
                 [accum curr i] > reducei
                   if. > @
@@ -51,16 +61,6 @@
               nodes
               node
               index.add 1
-
-    [nodesList currCount] > rec
-      if. > @
-        nodesList.length.eq 0
-        currCount
-        ^.rec
-          ^.visitAndRemove
-            nodesList
-            (nodesList.get 0).get 0
-          currCount.add 1
 
   buildAdjacencyList (class.methods) > adjList
 
@@ -116,7 +116,6 @@
         ^.rec
           append.
             adjList
-            appendAll.
-              * currElement
-              ^.getConjucentElements currElement
+            (* currElement).appendAll
+              ^.^.getConjucentElements currElement
           currIndex.add 1
