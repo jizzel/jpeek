@@ -197,6 +197,22 @@ public final class App {
                     )
             );
         }
+        if (this.params.containsKey("EO_LCOM4")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_LCOM4")
+                    )
+            );
+        }
+        if (this.params.containsKey("EO_CCM")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_CCM")
+                    )
+            );
+        }
         if (this.params.containsKey("EO_TCC")) {
             reports.add(
                     new XslReport(
