@@ -25,7 +25,9 @@
       i.greater imax
       count
       if. >
-        count.greater 1
+        count.greater.length.greater 1
+        connectionCount.append reachabilityM
+
 
 
   if. > @
