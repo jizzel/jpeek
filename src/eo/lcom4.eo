@@ -1,0 +1,6 @@
++package org.jpeek.calculus.eo
++alias org.jpeek.calculus.eo.connectionGraph
+
+[class] > lcom4
+  graph.countConnectedComponents > @
+  connectionGraph class > graph
