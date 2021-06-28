@@ -205,6 +205,14 @@ public final class App {
                     )
             );
         }
+        if (this.params.containsKey("EO_LCOM5")) {
+            reports.add(
+                    new XslReport(
+                            chain.transform(skeleton), eoCalc,
+                            new ReportData("EO_LCOM5")
+                    )
+            );
+        }
         if (this.params.containsKey("EO_CCM")) {
             reports.add(
                     new XslReport(
