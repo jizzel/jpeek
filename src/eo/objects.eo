@@ -14,7 +14,7 @@
 # args - array of argument types of the method
 # atts - array of attrribute objects used by method
 # calls - array of method calls of the method
-[name args atts calls] > method
+[name args atts attsGet attsPut calls] > method
   name > @
 
   [a] > isUsingAttribute

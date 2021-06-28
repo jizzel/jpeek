@@ -37,19 +37,19 @@ public final class EOSkeleton {
             for (XML  __xml_class : __xml_package.nodes("//package[@id='"+packageName+"']//class")){
                 String className = packageName + "." + __xml_class.xpath("@id").get(0);
                 EOarray classAttributes = new EOarray();
+
 //              List of class attributes
                 for (XML attr : __xml_class.nodes("attributes/attribute")) {
                     String attName = attr.xpath("text()").get(0);
                     classAttributes = classAttributes.EOappend(new EOatt(new EOstring(attName)));
                 }
-
                 EOarray classMethods = new EOarray();
 
 //              list of class methods
                 for (XML _xml : __xml_class.nodes("methods/method")) {
-
-
                     EOarray methodAttributes = new EOarray();
+                    EOarray methodAttributesGet = new EOarray();
+                    EOarray methodAttributesPut = new EOarray();
                     EOarray methodArguments = new EOarray();
                     EOarray methodCalls = new EOarray();
                     String methodName = _xml.xpath("@name").get(0);
@@ -63,6 +63,8 @@ public final class EOSkeleton {
 
                         }
                     }
+                    HashMap<String, HashSet<String>> attributes = new HashMap<String, HashSet<String>>();
+                    HashSet<String> calls = new HashSet<String>();
                     for (XML _xml_1 : _xml.nodes("ops")) {
 //                      list of fields/attributes used by this method
                         for(XML _xml_2 : _xml_1.nodes("op")){
@@ -71,21 +73,49 @@ public final class EOSkeleton {
                                 String callName = _xml_2.nodes("name").get(0).xpath("text()").get(0);
                                 if(callName.startsWith(className + ".")){
                                     callName = callName.replaceFirst(className + ".","");
-                                    methodCalls = methodCalls.EOappend(new EOatt(new EOstring(callName)));
+                                    if(!callName.contains("."))
+                                        calls.add(callName);
                                 }
                             }else{
                                 String attName = _xml_2.xpath("text()").get(0).trim();
                                 if(!attName.equals("")){
-                                    methodAttributes = methodAttributes.EOappend(new EOatt(new EOstring(attName)));
+                                    HashSet<String> attOps = attributes.getOrDefault(attName, new HashSet<String>());
+                                    attOps.add(opCode);
+                                    attributes.putIfAbsent(attName, attOps);
                                 }
                             }
                         }
+                    }
+                    for (String callName : calls) {
+                        methodCalls = methodCalls.EOappend(new EOatt(new EOstring(callName)));
+                    }
+
+                    for (Map.Entry<String, HashSet<String>> attribute : attributes.entrySet()) {
+                        String attName = attribute.getKey();
+                        attName = attName.replaceFirst(className + ".","");
+                        if(!attName.contains(".")){
+                            boolean includeAtt = false;
+                            for (String opCode: attribute.getValue()){
+                                if("get".equals(opCode) || "get_static".equals(opCode)) {
+                                    methodAttributesGet = methodAttributesGet.EOappend(new EOatt(new EOstring(attName)));
+                                    includeAtt = true;
+                                }
+                                if("put".equals(opCode) || "put_static".equals(opCode)) {
+                                    methodAttributesPut = methodAttributesPut.EOappend(new EOatt(new EOstring(attName)));
+                                    includeAtt = true;
+                                }
+                            }
+                            if(includeAtt) methodAttributes = methodAttributes.EOappend(new EOatt(new EOstring(attName)));
+                        }
+
                     }
                     classMethods = classMethods.EOappend(
                             new EOmethod(
                                     new EOstring(methodName),
                                     methodArguments,
                                     methodAttributes,
+                                    methodAttributesGet,
+                                    methodAttributesPut,
                                     methodCalls
                             ));
 
