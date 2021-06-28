@@ -3,7 +3,7 @@
 
 [class] > lcom5
   graph1.countEdges > a
-  class.methods > k
-  class.atts > l
+  class.methods.length > k
+  class.atts.length > l
   ((a.sub (k.mul l)).div (l.sub (k.mul l))) > @
   connectionGraph class > graph1
