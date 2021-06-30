@@ -401,14 +401,14 @@
           0
           imax
         if.
-         i.eq j
-         restArray
-         restArray.appendAll
-           if.
-             methodI.isCallsMethod methodJ
-             *
-               newPair
-             *
+          i.eq j
+          restArray
+          restArray.appendAll
+            if.
+              methodI.isCallsMethod methodJ
+              *
+                newPair
+              *
   if. > @
     less.
       methods.length
@@ -451,11 +451,16 @@
                 j
             *
 
-  maLoop > @
-    0
-    class.methods.length
-    0
-    class.atts.length
+  if. > @
+    or.
+      class.methods.length.eq 0
+      class.atts.length.eq 0
+    *
+    maLoop
+      0
+      class.methods.length
+      0
+      class.atts.length
 # ===================================================================
 # Get an array of iPair objects
 # iPair.i is the index of method which uses the attribute with iPair.j index
@@ -468,9 +473,9 @@
 
   [maP cP] > emaLoop
     [] > newPairs!
-      maP.get i > maPair
-      cP.get j > callPair
       [i imax j jmax] > newPairsLoop
+        ^.^.maP.get i > maPair
+        ^.^.cP.get j > callPair
         if. > @
           i.geq imax
           *
@@ -497,18 +502,20 @@
                     maPair.j
 
       if. > @
-        cP.length.eq 0
-        maP
+        or.
+          ^.cP.length.eq 0
+          ^.maP.length.eq 0
+        ^.maP
         newPairsLoop
           0
-          cp.length
+          ^.cP.length
           0
-          maP.length
+          ^.maP.length
 
     [] > joinedPairs!
-      [i imax] > joinLoop
+      [i imax] > joinLoop2
         (^.^.newPairs.get i) > pairI!
-        joinLoop > otherPairs!
+        joinLoop2 > otherPairs!
           i.add 1
           imax
         if. > @
@@ -529,7 +536,7 @@
       if. > @
         ^.newPairs.length.eq 0
         ^.maP
-        joinLoop
+        joinLoop2
           0
           ^.newPairs.length
 
@@ -542,10 +549,12 @@
         appendAll.
           maP
           joinedPairs
-        cp
+        cP
 
   if. > @
-    callPairs.length.eq 0
+    or.
+      callPairs.length.eq 0
+      maPairs.length.eq 0
     maPairs
     emaLoop
       maPairs
