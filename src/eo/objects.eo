@@ -121,6 +121,33 @@
           ^.j
           p.i
 
+  [pairArray] > inArray2
+    [i imax] > paLoop
+      if. > @
+        i.geq imax
+        false
+        or.
+          ^.^.eq2
+            ^.pairArray.get i
+          paLoop
+            i.add 1
+            imax
+
+    and. > @
+      pairArray.length.greater 0
+      paLoop
+        0
+        pairArray.length
+
+  [p] > eq2
+    and. > @
+      eq.
+        ^.i
+        p.i
+      eq.
+        ^.j
+        p.j
+
   not. > @
     eq.
       i
@@ -355,71 +382,219 @@
 #  methods - array of method objects
 #  Result is EOarray of iPar objects
 [methods] > getCallPairs
-  [i j imax] > directCalls
+  [i j imax] > methodCalls
     ^.methods.get i > methodI
     ^.methods.get j > methodJ
     iPair i j > newPair
-    directCalls > restArray!
+    methodCalls > restArray!
       i
       j.add 1
       imax
 
     if. > @
-      i.geq (imax.sub 1)
+      i.geq imax
       *
       if.
         j.geq imax
-        directCalls
+        methodCalls
           i.add 1
-          i.add 2
+          0
           imax
-        restArray.appendAll
-          if.
-            and.
-              isCallPair methodI methodJ
-              not.
-                newPair.inArray restArray
-            *
-              newPair
-            *
+        if.
+         i.eq j
+         restArray
+         restArray.appendAll
+           if.
+             methodI.isCallsMethod methodJ
+             *
+               newPair
+             *
   if. > @
     less.
       methods.length
       2
     *
-    getAllPairs
-      directCalls 0 1 methods.length
+    methodCalls
+      0
+      1
+      methods.length
 # ===================================================================
-# Get an array of iPair objects representing Weak-connection graph for OCC metric
-[class] > occGraph
-  getCallPairs > callPairs!
-    class.methods
-  getDirectConnectPairs > dcp!
-    class.methods
-
-  [i imax] > arrLoop
-    arrLoop > restArray!
-      i.add 1
-      imax
-    ^.dcp.get i > currentPair
+# Get an array of iPair objects
+# iPair.i is the index of method which uses the attribute with iPair.j index
+[class] > getMAPairs
+  [i imax j jmax] > maLoop
+    ^.class.methods > methods
+    ^.class.atts > atts
     if. > @
       i.geq imax
-      ^.callPairs
-      appendAll.
-        restArray
-        if.
-          currentPair.inArray restArray
+      *
+      if.
+        j.geq jmax
+        maLoop
+          i.add 1
+          imax
+          0
+          jmax
+        appendAll.
+          maLoop
+            i
+            imax
+            j.add 1
+            jmax
+          if.
+            isAUsedByM
+              atts.get j
+              methods.get i
+            *
+              iPair
+                i
+                j
+            *
+
+  maLoop > @
+    0
+    class.methods.length
+    0
+    class.atts.length
+# ===================================================================
+# Get an array of iPair objects
+# iPair.i is the index of method which uses the attribute with iPair.j index
+# this object uses getCallPairs to extend the result of getMAPairs
+[class] > extendedMAPairs
+  getCallPairs > callPairs!
+    class.methods
+  getMAPairs > maPairs!
+    class
+
+  [maP cP] > emaLoop
+    [] > newPairs!
+      maP.get i > maPair
+      cP.get j > callPair
+      [i imax j jmax] > newPairsLoop
+        if. > @
+          i.geq imax
           *
+          if.
+            j.geq jmax
+            newPairsLoop
+              i.add 1
+              imax
+              0
+              jmax
+            appendAll.
+              newPairsLoop
+                i
+                imax
+                j.add 1
+                jmax
+              if.
+                eq.
+                  maPair.i
+                  callPair.j
+                *
+                  iPair
+                    callPair.i
+                    maPair.j
+
+      if. > @
+        cP.length.eq 0
+        maP
+        newPairsLoop
+          0
+          cp.length
+          0
+          maP.length
+
+    [] > joinedPairs!
+      [i imax] > joinLoop
+        (^.^.newPairs.get i) > pairI!
+        joinLoop > otherPairs!
+          i.add 1
+          imax
+        if. > @
+          i.geq imax
           *
-            currentPair
+          appendAll.
+            otherPairs
+            if.
+              not.
+                or.
+                  pairI.inArray2
+                    otherPairs
+                  pairI.inArray2
+                    ^.^.maP
+              *
+                pairI
+              *
+      if. > @
+        ^.newPairs.length.eq 0
+        ^.maP
+        joinLoop
+          0
+          ^.newPairs.length
+
+    if. > @
+      or.
+        newPairs.length.eq 0
+        joinedPairs.length.eq 0
+      maP
+      emaLoop
+        appendAll.
+          maP
+          joinedPairs
+        cp
 
   if. > @
     callPairs.length.eq 0
-    dcp
-    if.
-      dcp.length.eq 0
+    maPairs
+    emaLoop
+      maPairs
       callPairs
-      arrLoop 0 dcp.length
+
+# ===================================================================
+# Get an array of iPair objects representing Weak-connection graph for OCC metric
+[class] > occGraph
+  extendedMAPairs > maPairs!
+    class
+  [i j imax] > graphLoop
+    ^.maPairs.get i > pairI
+    ^.maPairs.get j > pairJ
+    iPair > resPair
+      pairI.i
+      pairJ.i
+    graphLoop > otherPairs!
+      i
+      j.add 1
+      imax
+
+    if. > @
+      i.geq
+        imax.sub 1
+      *
+      if.
+        j.geq imax
+        graphLoop
+          i.add 1
+          i.add 2
+          imax
+        appendAll.
+          otherPairs
+          if.
+            and.
+              resPair
+              and.
+                eq.
+                  pairI.j
+                  pairJ.j
+                not.
+                  resPair.inArray otherPairs
+  if. > @
+    maPairs.length.less 2
+    *
+    graphLoop
+      0
+      1
+      maPairs.length
 # ===================================================================
 [pairArray index] > countPairsWithIndex
   reduce. > @
