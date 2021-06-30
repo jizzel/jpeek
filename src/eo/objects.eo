@@ -122,20 +122,20 @@
           p.i
 
   [pairArray] > inArray2
-    [i imax] > paLoop
+    [i imax] > paLoop2
       if. > @
         i.geq imax
         false
         or.
           ^.^.eq2
             ^.pairArray.get i
-          paLoop
+          paLoop2
             i.add 1
             imax
 
     and. > @
       pairArray.length.greater 0
-      paLoop
+      paLoop2
         0
         pairArray.length
 
