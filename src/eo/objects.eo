@@ -500,6 +500,7 @@
                   iPair
                     callPair.i
                     maPair.j
+                *
 
       if. > @
         or.
@@ -508,9 +509,9 @@
         ^.maP
         newPairsLoop
           0
-          ^.cP.length
-          0
           ^.maP.length
+          0
+          ^.cP.length
 
     [] > joinedPairs!
       [i imax] > joinLoop2
@@ -597,6 +598,9 @@
                   pairJ.j
                 not.
                   resPair.inArray otherPairs
+            *
+              resPair
+            *
   if. > @
     maPairs.length.less 2
     *
