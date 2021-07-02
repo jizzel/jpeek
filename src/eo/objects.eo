@@ -15,7 +15,17 @@
 # atts - array of attrribute objects used by method
 # calls - array of method calls of the method
 [name args atts attsGet attsPut calls] > method
-  name > @
+
+  [] > callString
+    reduce. > @
+      ^.args
+      ^.name
+      []
+        [accum current] > reduce
+          append. > @
+            accum
+            "|"
+            current
 
   [a] > isUsingAttribute
     [i imax] > attsLoop
@@ -42,7 +52,7 @@
         if.
           eq.
             ^.^.calls.get i
-            ^.m.name
+            ^.m.callString
           true
           mLoop
             i.add 1
@@ -62,7 +72,7 @@
     greater. > @
       count
         ^.calls
-        method
+        method.callString
       0
 
   [method] > accessSameAttribute
@@ -76,6 +86,8 @@
         or.
           ^.^.accessesAtt currAtt
           rec (currIndex.add 1)
+
+  name > @
 
 # ===================================================================
 # Attribute object
