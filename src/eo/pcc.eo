@@ -1,5 +1,31 @@
 +package org.jpeek.calculus.eo
-+alias org.jpeek.calculus.eo.isAUsedByM
++alias org.jpeek.calculus.eo.pccGraph
++alias org.jpeek.calculus.eo.countPairsWithIIndex
 
 [class] > pcc
+  class.methods.length > n
+  pccGraph > graph!
+    class
 
+  [i imax] > indexLoop
+    countPairsWithIIndex > currValue!
+      ^.graph
+      i
+    indexLoop > maxValue!
+      i.add 1
+      imax
+    if. > @
+      i.geq imax
+      0
+      if.
+        currValue.greater maxValue
+        currValue
+        maxValue
+  if. > @
+    n.less 2
+    0.0
+    div.
+      toFloat.
+        indexLoop 0 n
+      toFloat.
+        n.sub 1

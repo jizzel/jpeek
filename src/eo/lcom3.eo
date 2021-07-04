@@ -23,6 +23,7 @@
             isAUsedByM
               ^.class.atts.get i
               ^.class.methods.get j
+              0
             1
             0
 

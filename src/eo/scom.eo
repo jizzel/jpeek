@@ -20,7 +20,7 @@
       []
         [accumulator current] > reduce
           if. > @
-            isAUsedByM current (^.^.secondM)
+            isAUsedByM current (^.^.secondM) 0
             add.
               accumulator
               1
