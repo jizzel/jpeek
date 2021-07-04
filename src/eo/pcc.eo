@@ -1,41 +1,31 @@
 +package org.jpeek.calculus.eo
-+alias org.jpeek.calculus.eo.isAUsedByM
++alias org.jpeek.calculus.eo.pccGraph
++alias org.jpeek.calculus.eo.countPairsWithIIndex
 
 [class] > pcc
-  class.methods.length > numOfMethods
-  [i imax j jMax count] > reachableM
-    (^.class.methods.get i) > RsM
-    (^.class.methods.get j) > Mi
+  class.methods.length > n
+  pccGraph > graph!
+    class
 
-    reduce. > getReachabilityM
-      RsM.attsPut
-      0
-      []
-        [accumulator current] > reduce
-          if. > @
-            isAUsedByM current (^.Mi)
-            add.
-              accumulator
-              1
-            accumulator
-
-    [] > connectionCount
-
+  [i imax] > indexLoop
+    countPairsWithIIndex > currValue!
+      ^.graph
+      i
+    indexLoop > maxValue!
+      i.add 1
+      imax
     if. > @
-      i.greater imax
-      count
-      if. >
-        count.greater.length.greater 1
-        connectionCount.append reachabilityM
-
-
-
+      i.geq imax
+      0
+      if.
+        currValue.greater maxValue
+        currValue
+        maxValue
   if. > @
-    numOfMethods.greater 1
+    n.less 2
+    0.0
     div.
       toFloat.
-        reachableM 0 numOfMethods 1 (numOfMethods.add 1) 0
+        indexLoop 0 n
       toFloat.
-        numOfMethods.sub 1
-    0.0
-
+        n.sub 1

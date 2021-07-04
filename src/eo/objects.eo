@@ -15,7 +15,16 @@
 # atts - array of attrribute objects used by method
 # calls - array of method calls of the method
 [name args atts attsGet attsPut calls] > method
-  name > @
+  [] > callString
+    reduce. > @
+      ^.args
+      ^.name
+      []
+        [accum current] > reduce
+          append. > @
+            accum
+            "|"
+            current
 
   [a] > isUsingAttribute
     [i imax] > attsLoop
@@ -42,7 +51,7 @@
         if.
           eq.
             ^.^.calls.get i
-            ^.m.name
+            ^.m.callString
           true
           mLoop
             i.add 1
@@ -62,7 +71,7 @@
     greater. > @
       count
         ^.calls
-        method
+        method.callString
       0
 
   [method] > accessSameAttribute
@@ -76,6 +85,8 @@
         or.
           ^.^.accessesAtt currAtt
           rec (currIndex.add 1)
+
+  name > @
 
 # ===================================================================
 # Attribute object
@@ -121,6 +132,33 @@
           ^.j
           p.i
 
+  [pairArray] > inArray2
+    [i imax] > paLoop2
+      if. > @
+        i.geq imax
+        false
+        or.
+          ^.^.eq2
+            ^.pairArray.get i
+          paLoop2
+            i.add 1
+            imax
+
+    and. > @
+      pairArray.length.greater 0
+      paLoop2
+        0
+        pairArray.length
+
+  [p] > eq2
+    and. > @
+      eq.
+        ^.i
+        p.i
+      eq.
+        ^.j
+        p.j
+
   not. > @
     eq.
       i
@@ -130,14 +168,25 @@
 # is Attribute used by method
 # a - attribute object
 # m - method object
-[a m] > isAUsedByM
+# op - integer code of the access type:
+#   0 - method uses attribute
+#   1 - method writes data to attribute
+#   2 - method reads data from attribute
+[a m op] > isAUsedByM
+  if. > atts
+    op.eq 1
+    m.attsPut
+    if.
+      op.eq 2
+      m.attsGet
+      m.atts
   [i imax] > attributeLoop
     if. > @
       i.geq imax
       false
       if.
         eq.
-          (^.m.atts.get i).name
+          (^.atts.get i).name
           ^.a.name
         true
         attributeLoop
@@ -145,7 +194,7 @@
           imax
   attributeLoop > @
     0
-    m.atts.length
+    atts.length
 
 # ===================================================================
 # Has or not 2 methods of a class direct connectivity(both methods are using same attribute(s))
@@ -355,71 +404,309 @@
 #  methods - array of method objects
 #  Result is EOarray of iPar objects
 [methods] > getCallPairs
-  [i j imax] > directCalls
+  [i j imax] > methodCalls
     ^.methods.get i > methodI
     ^.methods.get j > methodJ
     iPair i j > newPair
-    directCalls > restArray!
+    methodCalls > restArray!
       i
       j.add 1
       imax
 
     if. > @
-      i.geq (imax.sub 1)
+      i.geq imax
       *
       if.
         j.geq imax
-        directCalls
+        methodCalls
           i.add 1
-          i.add 2
+          0
           imax
-        restArray.appendAll
-          if.
-            and.
-              isCallPair methodI methodJ
-              not.
-                newPair.inArray restArray
-            *
-              newPair
-            *
+        if.
+          i.eq j
+          restArray
+          restArray.appendAll
+            if.
+              methodI.isCallsMethod methodJ
+              *
+                newPair
+              *
   if. > @
     less.
       methods.length
       2
     *
-    getAllPairs
-      directCalls 0 1 methods.length
+    methodCalls
+      0
+      1
+      methods.length
+# ===================================================================
+# Get an array of iPair objects
+# iPair.i is the index of method which uses the attribute with iPair.j index
+# methods - array of method
+# atts - array of attrribute objects
+# op - integer code of the access type:
+#   0 - method uses attribute
+#   1 - method writes data to attribute
+#   2 - method reads data from attribute
+[methods atts op] > getMAPairs
+  [i imax j jmax] > maLoop
+    ^.methods > methods
+    ^.atts > atts
+    if. > @
+      i.geq imax
+      *
+      if.
+        j.geq jmax
+        maLoop
+          i.add 1
+          imax
+          0
+          jmax
+        appendAll.
+          maLoop
+            i
+            imax
+            j.add 1
+            jmax
+          if.
+            isAUsedByM
+              atts.get j
+              methods.get i
+              ^.op
+            *
+              iPair
+                i
+                j
+            *
+
+  if. > @
+    or.
+      methods.length.eq 0
+      atts.length.eq 0
+    *
+    maLoop
+      0
+      methods.length
+      0
+      atts.length
+# ===================================================================
+# Get an array of iPair objects
+# iPair.i is the index of method which uses the attribute with iPair.j index
+# this object uses getCallPairs to extend the result of getMAPairs
+# methods - array of method
+# atts - array of attrribute objects
+# op - integer code of the access type:
+#   0 - method uses attribute
+#   1 - method writes data to attribute
+#   2 - method reads data from attribute
+[methods atts op] > extendedMAPairs
+  getCallPairs > callPairs!
+    methods
+  getMAPairs > maPairs!
+    methods
+    atts
+    op
+
+  [maP cP] > emaLoop
+    [] > newPairs!
+      [i imax j jmax] > newPairsLoop
+        ^.^.maP.get i > maPair
+        ^.^.cP.get j > callPair
+        if. > @
+          i.geq imax
+          *
+          if.
+            j.geq jmax
+            newPairsLoop
+              i.add 1
+              imax
+              0
+              jmax
+            appendAll.
+              newPairsLoop
+                i
+                imax
+                j.add 1
+                jmax
+              if.
+                eq.
+                  maPair.i
+                  callPair.j
+                *
+                  iPair
+                    callPair.i
+                    maPair.j
+                *
+
+      if. > @
+        or.
+          ^.cP.length.eq 0
+          ^.maP.length.eq 0
+        ^.maP
+        newPairsLoop
+          0
+          ^.maP.length
+          0
+          ^.cP.length
+
+    [] > joinedPairs!
+      [i imax] > joinLoop2
+        (^.^.newPairs.get i) > pairI!
+        joinLoop2 > otherPairs!
+          i.add 1
+          imax
+        if. > @
+          i.geq imax
+          *
+          appendAll.
+            otherPairs
+            if.
+              not.
+                or.
+                  pairI.inArray2
+                    otherPairs
+                  pairI.inArray2
+                    ^.^.maP
+              *
+                pairI
+              *
+      if. > @
+        ^.newPairs.length.eq 0
+        ^.maP
+        joinLoop2
+          0
+          ^.newPairs.length
+
+    if. > @
+      or.
+        newPairs.length.eq 0
+        joinedPairs.length.eq 0
+      maP
+      emaLoop
+        appendAll.
+          maP
+          joinedPairs
+        cP
+
+  if. > @
+    or.
+      callPairs.length.eq 0
+      maPairs.length.eq 0
+    maPairs
+    emaLoop
+      maPairs
+      callPairs
+
 # ===================================================================
 # Get an array of iPair objects representing Weak-connection graph for OCC metric
 [class] > occGraph
-  getCallPairs > callPairs!
+  extendedMAPairs > maPairs!
     class.methods
-  getDirectConnectPairs > dcp!
-    class.methods
-
-  [i imax] > arrLoop
-    arrLoop > restArray!
-      i.add 1
+    class.atts
+    0
+  [i j imax] > graphLoop
+    ^.maPairs.get i > pairI
+    ^.maPairs.get j > pairJ
+    iPair > resPair
+      pairI.i
+      pairJ.i
+    graphLoop > otherPairs!
+      i
+      j.add 1
       imax
-    ^.dcp.get i > currentPair
+
     if. > @
-      i.geq imax
-      ^.callPairs
-      appendAll.
-        restArray
-        if.
-          currentPair.inArray restArray
-          *
-          *
-            currentPair
+      i.geq
+        imax.sub 1
+      *
+      if.
+        j.geq imax
+        graphLoop
+          i.add 1
+          i.add 2
+          imax
+        appendAll.
+          otherPairs
+          if.
+            and.
+              resPair
+              and.
+                eq.
+                  pairI.j
+                  pairJ.j
+                not.
+                  resPair.inArray otherPairs
+            *
+              resPair
+            *
+  if. > @
+    maPairs.length.less 2
+    *
+    graphLoop
+      0
+      1
+      maPairs.length
+# ===================================================================
+# Get an array of iPair objects representing Strong-connection graph for PCC metric
+[class] > pccGraph
+  extendedMAPairs > wrPairs!
+    class.methods
+    class.atts
+    1
+  extendedMAPairs > rePairs!
+    class.methods
+    class.atts
+    2
+
+  [i imax j jmax] > graphLoop2
+    ^.wrPairs.get i > pairI
+    ^.rePairs.get j > pairJ
+    iPair > resPair
+      pairI.i
+      pairJ.i
+    graphLoop2 > otherPairs!
+      i
+      imax
+      j.add 1
+      jmax
+
+    if. > @
+      i.geq
+        imax
+      *
+      if.
+        j.geq jmax
+        graphLoop2
+          i.add 1
+          imax
+          0
+          jmax
+        appendAll.
+          otherPairs
+          if.
+            and.
+              resPair
+              and.
+                eq.
+                  pairI.j
+                  pairJ.j
+                not.
+                  resPair.inArray2 otherPairs
+            *
+              resPair
+            *
 
   if. > @
-    callPairs.length.eq 0
-    dcp
-    if.
-      dcp.length.eq 0
-      callPairs
-      arrLoop 0 dcp.length
+    or.
+      wrPairs.length.eq 0
+      rePairs.length.eq 0
+    *
+    graphLoop2
+      0
+      wrPairs.length
+      0
+      rePairs.length
 # ===================================================================
 [pairArray index] > countPairsWithIndex
   reduce. > @
@@ -431,6 +718,18 @@
           or.
             ^.^.index.eq (current.i)
             ^.^.index.eq (current.j)
+          accum.add 1
+          accum
+
+# ===================================================================
+[pairArray index] > countPairsWithIIndex
+  reduce. > @
+    pairArray
+    0
+    []
+      [accum current] > reduce
+        if. > @
+          ^.^.index.eq (current.i)
           accum.add 1
           accum
 

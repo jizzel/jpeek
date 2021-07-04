@@ -73,8 +73,13 @@ public final class EOSkeleton {
                                 String callName = _xml_2.nodes("name").get(0).xpath("text()").get(0);
                                 if(callName.startsWith(className + ".")){
                                     callName = callName.replaceFirst(className + ".","");
-                                    if(!callName.contains("."))
+                                    if(!callName.contains(".")){
+                                        for(XML _xml_3 : _xml_2.nodes("args").get(0).nodes("arg")){
+                                            String argType = _xml_3.xpath("@type").get(0);
+                                            if(!"".equals(argType))  callName = callName + "|" + argType;
+                                        }
                                         calls.add(callName);
+                                    }
                                 }
                             }else{
                                 String attName = _xml_2.xpath("text()").get(0).trim();

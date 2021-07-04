@@ -3,7 +3,7 @@
 +alias org.jpeek.calculus.eo.countPairsWithIndex
 
 [class] > occ
-  class.methods.length > n!
+  class.methods.length > n
   occGraph > graph!
     class
 
